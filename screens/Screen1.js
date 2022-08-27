@@ -1,5 +1,13 @@
 import React, { useRef,useState} from 'react'
-import { Text, View,Image, FlatList,StyleSheet, ImageBackground, TouchableOpacity,DrawerLayoutAndroid,Button, StatusBar} from 'react-native'
+import { Text,
+    View,
+    Image, 
+    FlatList,
+    StyleSheet, 
+    TouchableOpacity,
+    DrawerLayoutAndroid,
+    Button, StatusBar, 
+    ActivityIndicator,} from 'react-native'
 import AnimatedLottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Card,Title } from 'react-native-paper';
@@ -29,6 +37,8 @@ const Screen1 =()=>{
 
     const drawer = useRef(null);
     const [drawerPosition, setDrawerPosition] = useState("left");
+
+    
 
     const navigationView = () => (
         <View style={{flexDirection:'column', flex:1}}>

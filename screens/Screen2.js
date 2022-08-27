@@ -6,6 +6,8 @@ import { Picker } from "@react-native-picker/picker";
 import { MaterialIcons } from '@expo/vector-icons';
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
+import Screen1 from "./Screen1";
 
 
 const Screen2 = () => {
@@ -61,11 +63,6 @@ const Screen2 = () => {
     // };
 
 
-
-
-
-
-
     const getCurrentDate=()=>{
  
         var date = new Date().getDate();
@@ -85,13 +82,17 @@ const Screen2 = () => {
        alert('done!')
    }
 
+   const navigation=useNavigation()
+
 
     return (
         <View style={{flex:1}}>
             <View style={{backgroundColor:'#ffa500', height:250, borderBottomRightRadius:50, borderBottomLeftRadius:50, alignItems:'center',justifyContent:'center'}}>
                 <View style={{flexDirection:'row-reverse',marginBottom:90}}>
-                <Text style={{marginRight:100,fontSize:18, fontWeight:'bold'}}>Add Expense</Text>
+                <Text style={{marginRight:80,fontSize:18, fontWeight:'bold'}}>Add Expense</Text>
+                <TouchableOpacity onPress={()=>navigation.navigate('Screen1')}>
                 <Ionicons style={{marginRight:80}} name="arrow-back-sharp" size={24} color="black" />
+                </TouchableOpacity>
                 </View>
             </View>
 

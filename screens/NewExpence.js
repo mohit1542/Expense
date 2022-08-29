@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View } from 'react-native'
 
-function NewExpence() {
+export default function NewExpence() {
     return (
       <View>
         <Text> textInComponent </Text>
@@ -9,4 +9,4 @@ function NewExpence() {
     )
   }
 
-export default NewExpencew
+

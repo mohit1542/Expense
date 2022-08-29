@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
-import { Text, View,Button, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Text, View,Button, Alert,ToastAndroid } from 'react-native'
 import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import Parse from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+
 Parse.setAsyncStorage(AsyncStorage);
-Parse.initialize('LIfdhz6b9Few6fSBtw7ZMlGOrIR8Psx8axOGjQxA','pzd8mAbqTYSxzZrc23K4gYda5ymkVZ9Hyg0M4tKq');
+Parse.initialize('PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ','jtO82lSQGgeXVb3jX0gKm7SMHIwY2booxogq7RbT');
 Parse.serverURL = 'https://parseapi.back4app.com/';
 
 
@@ -21,14 +22,15 @@ export default function RegisterScreen (){
   const navigation=useNavigation();
 
   const registerUser=async function(){
-    const Email=email;
+    // const Name=name;
+    const Name=name;
     const Password=password;
 
-    return await Parse.User.signUp(Email,Password)
+    return await Parse.User.signUp(Name,Password,{email:email, imageURL:imageURL})
       .then((createdUser)=>{
-        Alert.alert(
-          'Success!',
+        console.log('registered',
           //`User ${createdUser.getUsername()} was successfully created!`,
+          navigation.navigate('BottomScreen')
         );
         return true;
       })
@@ -38,6 +40,31 @@ export default function RegisterScreen (){
       })
   }
 
+
+  const showToastWithGravity = () => {
+    ToastAndroid.showWithGravity(
+      "You are Registered Successfully!",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
+
+  
+
+
+  // async function addPerson(){
+  //   try {
+  //     const newPerson =new Parse.Object('Auth1');
+  //     newPerson.set('name', name);
+  //     newPerson.set('Email', email);
+  //     newPerson.set('password', password);
+  //     newPerson.set('ImageUrl', imageURL);
+  //     await newPerson.save();
+  //   } catch (error) {
+  //     alert('something went wrong')
+  //   }
+  // }
+
   // const register =()=> {
   // const auth =getAuth()
   // createUserWithEmailAndPassword(auth, email, password)
@@ -46,13 +73,7 @@ export default function RegisterScreen (){
   // const user = userCredential.user;
   
 
-  // const showToastWithGravity = () => {
-  //   ToastAndroid.showWithGravity(
-  //     "All Your Base Are Belong To Us",
-  //     ToastAndroid.SHORT,
-  //     ToastAndroid.CENTER
-  //   );
-  // };
+  
   
 //   updateProfile( auth.currentUser,{
 //   displayName: name, photoURL: imageURL? imageURL:'https://images.unsplash.com/photo-1660089796700-9117d02e8e34?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80'
@@ -100,7 +121,6 @@ export default function RegisterScreen (){
         activeOutlineColor={'grey'}
         onChangeText={text => setName(text)}
         value={name}
-        secureTextEntry
         maxLength={50}
         />
 
@@ -144,8 +164,9 @@ export default function RegisterScreen (){
         />
       
       <View style={[{ width: "70%", margin: 40, }]}>
-          <Button title='Register' color={`#ff00ff`} onPress={()=>registerUser}/>
+          <Button title='Register' color={`#ff00ff`} onPress={()=>{registerUser();showToastWithGravity()}}/>
       </View>
+
     </View>
   )
 }

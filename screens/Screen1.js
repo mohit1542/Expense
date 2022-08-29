@@ -1,22 +1,25 @@
-import React, { useRef,useState} from 'react'
+import React, { useRef,useState, useEffect} from 'react'
 import { Text,
     View,
-    Image, 
+    Image,
     FlatList,
     StyleSheet, 
     TouchableOpacity,
     DrawerLayoutAndroid,
-    Button, StatusBar, 
-    ActivityIndicator,} from 'react-native'
+    Button, StatusBar,
+    ActivityIndicator,
+    Alert,} from 'react-native'
 import AnimatedLottieView from 'lottie-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import { Card,Title } from 'react-native-paper';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons'; 
 import { MaterialIcons } from '@expo/vector-icons';
 import { Avatar } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
+import RegisterScreen from '../VerifyScreen/RegisterScreen';
+import Parse, { Query } from "parse/react-native.js";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -37,6 +40,41 @@ const Screen1 =()=>{
 
     const drawer = useRef(null);
     const [drawerPosition, setDrawerPosition] = useState("left");
+    const [person,setPerson]=useState(new Parse.Object('User'))
+    const [fetch, setFetch]=useState('suresh')
+    const [username, setUsername]=useState('')
+
+
+    //loading show
+    const [Loading, setLoading]=useState(false);
+    if (Loading){
+    return (
+      <View style={{top:'50%'}}>
+        <ActivityIndicator size={60} color='blue' />
+      </View>
+    
+    )
+    }
+
+
+    const doUserLogOut=async function() {
+        //setLoading(true)
+        return await Parse.User.logOut()
+        .then(async()=> {
+            const currentUser=await Parse.User.currentAsync();
+            if (currentUser===null){
+                Alert.alert('Logout successfully')
+                navigation.dispatch(StackActions.popToTop());
+                //setLoading(false)
+            }
+            return true;
+            
+        })
+        .catch((error)=>{
+            Alert.alert('Error!',error.message)
+            return false;
+        });
+    }
 
     
 
@@ -56,11 +94,66 @@ const Screen1 =()=>{
             title="Close drawer"
             onPress={() => drawer.current.closeDrawer()}
           />
+
+        <Button
+            title='LogOut'
+            onPress={doUserLogOut}
+        />
           </View>
           
         </View>
     );
 
+
+    //set greeting time
+
+        let AvatarShow;
+        let timeofDay;
+        const date=new Date();
+        const hours=date.getHours();
+
+        if (hours < 12) {
+            timeofDay = 'Morning';
+            AvatarShow= <Avatar.Image size={20} source={require('../assets/greetImage/morningSun.png')} />
+            
+          } else if (hours >= 12 && hours < 17) {
+            timeofDay = 'Afternoon';
+            AvatarShow= <Avatar.Image size={15} source={require('../assets/greetImage/morningSun.png')} />
+            
+            
+          } else {
+            timeofDay='Evening'
+            AvatarShow= <Avatar.Image size={24} source={require('../assets/greetImage/eveningSun.png')} />      
+          }
+
+
+    
+
+          
+
+    // set greet name
+      
+    useEffect(() => {
+        // Since the async method Parse.User.currentAsync is needed to
+        // retrieve the current user data, you need to declare an async
+        // function here and call it afterwards
+        async function getCurrentUser() {
+          // This condition ensures that username is updated only if needed
+          if (username === '') {
+            const currentUser = await Parse.User.currentAsync();
+            if (currentUser !== null) {
+              setUsername(currentUser.getUsername());
+            }
+          }
+        }
+        getCurrentUser();
+      }, [username]);
+    
+
+
+        
+
+        
 
     const navigation=useNavigation();
 
@@ -100,7 +193,7 @@ const Screen1 =()=>{
 
          <View style={{backgroundColor:'#afeeee', height:260, borderBottomLeftRadius:40}}>
 
-           <View style={{marginTop:35}}>
+           <View style={{marginTop:35, marginEnd:'88%'}}>
             <TouchableOpacity onPress={()=> drawer.current.openDrawer()}>
            <Ionicons name="reorder-three-outline" size={40} color="black" />
            </TouchableOpacity>
@@ -108,12 +201,17 @@ const Screen1 =()=>{
 
 
             <View style={styles.greet}>
-                <Text style={{fontSize:18, color:'white'}}>Good afternoon,</Text>
+                <View style={{flex:0.6,flexWrap:'wrap', marginLeft:15}}>
+                <Text style={{fontSize:18, color:'white'}}>Good {timeofDay} {AvatarShow} </Text>
+                <Text style={{marginLeft:40,fontSize:30, fontWeight:'bold', color:'white'}}> {username} </Text>
+                </View>
+                <View style={{flex:0.1, flexWrap:'wrap', marginRight:15}}>
                 <TouchableOpacity>
-                    <Ionicons style={{marginLeft:165}} name="notifications" size={26} color="blue" />
+                    <Ionicons name="notifications" size={26} color="blue" />
                 </TouchableOpacity>
+                </View>
             </View>
-            <Text style={{marginLeft:40,fontSize:30, fontWeight:'bold', color:'white'}}>Mohit</Text>
+            
             
         </View>
         </View>
@@ -145,11 +243,16 @@ const Screen1 =()=>{
         
         </View>
 
-        <View style={{marginTop:10, marginLeft:10, flexDirection:'row',marginBottom:10}}>
-        <Text style={{fontSize:15, fontWeight:'bold',}}>Transaction History</Text>
-        <TouchableOpacity >
-        <Text style={{fontSize:15, fontWeight:'200',marginLeft:150}}>see all</Text>
-        </TouchableOpacity>
+        <View style={{marginTop:10, flexDirection:'row',marginBottom:10, justifyContent:'space-between'}}>
+            <View style={{flex:0.5 }}>
+                <Text style={{fontSize:15, fontWeight:'bold', paddingLeft:'10%'}}>Transaction History</Text>
+            </View>
+
+            <View style={{flex:0.3,flexWrap:'wrap-reverse', marginRight:'5%'}}>
+                <TouchableOpacity >
+                    <Text style={{fontSize:15, fontWeight:'200'}}>see all</Text>
+                </TouchableOpacity>
+            </View>
         </View>
         
 
@@ -185,8 +288,11 @@ const Screen1 =()=>{
 
 const styles=StyleSheet.create({
     greet:{
-        marginLeft:20,
+        //marginLeft:20,
         flexDirection:'row',
+        flex:1,
+        flexWrap:'wrap',
+        justifyContent:'space-between'
         
     },
     backimage:{

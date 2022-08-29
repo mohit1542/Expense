@@ -1,21 +1,65 @@
-import React, { useState } from 'react'
-import { Text, View,Button, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState} from 'react'
+import { Text, View,Button, ActivityIndicator, Alert,  } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
-import Realm from 'realm';
+import Parse from 'parse/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
 
 
-
   const [email, setEmail]= useState('');
-    const [password, setPassword]= useState('');
-    const [Loading, setLoading]=useState(false);
-    if (Loading){
-      return <ActivityIndicator size='large' color='blue' />
-    }
+  const [password, setPassword]= useState('');
+  const [Loading, setLoading]=useState(false);
+  if (Loading){
+    return (
+      <View style={{top:'50%'}}>
+        <ActivityIndicator size={60} color='blue' />
+      </View>
+    
+    )
+  }
+   
 
-    const navigation=useNavigation();
+
+  const navigation=useNavigation();
+
+
+    const userLogin=async function(){
+
+    const Email=email;
+    const Password=password;
+
+    if(email.trim() == "" || password.trim() == ""){
+      Alert.alert('Error!', "Input cannot be empty")
+    } else if(password.trim().length<8){
+      Alert.alert('Error!', 'Password must be atleast 8 characters')
+    }else{
+      setLoading(true)
+    
+    return await Parse.User.logIn(Email,Password,{email:email})
+    .then(async(loggedInUser)=>{
+      const currentUser=await Parse.User.currentAsync();
+      console.log(loggedInUser===currentUser);
+      if(currentUser !== null){
+        //AsyncStorage.setItem("KeepUserLoggedIn", JSON.stringify(true));
+        navigation.navigate('BottomScreen')
+        setLoading(false)
+      }
+      return currentUser;
+      
+    })
+    .catch((error)=>{
+      Alert.alert('Error', error.message);
+      setLoading(false)
+      return false;
+      
+    });
+
+  }}
+  
+
+    
 
 
     // const signIn= () => {
@@ -80,7 +124,8 @@ export default function LoginScreen() {
         />
         
         <View style={[{ width: "70%", margin: 10, }]}>
-            <Button title='Sign in'/>
+            <Button title='Sign in' 
+            onPress={userLogin}/>
         </View>
 
         <View style={[{ width: "70%", margin: 10, }]}>

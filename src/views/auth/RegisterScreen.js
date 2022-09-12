@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View,Button, Alert,ToastAndroid } from 'react-native'
+import { Text, View,Button, Alert,ToastAndroid, TouchableOpacity } from 'react-native'
 import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import Parse from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoginScreen from './LoginScreen';
 
 
 
@@ -30,7 +31,7 @@ export default function RegisterScreen (){
       .then((createdUser)=>{
         console.log('registered',
           //`User ${createdUser.getUsername()} was successfully created!`,
-          navigation.navigate('BottomScreen')
+          navigation.navigate('MainNavigator')
         );
         return true;
       })
@@ -51,8 +52,8 @@ export default function RegisterScreen (){
 
   
 
-
-  // async function addPerson(){
+  
+   // async function addPerson(){
   //   try {
   //     const newPerson =new Parse.Object('Auth1');
   //     newPerson.set('name', name);
@@ -64,6 +65,8 @@ export default function RegisterScreen (){
   //     alert('something went wrong')
   //   }
   // }
+
+  //firebase auth 
 
   // const register =()=> {
   // const auth =getAuth()
@@ -166,6 +169,10 @@ export default function RegisterScreen (){
       <View style={[{ width: "70%", margin: 40, }]}>
           <Button title='Register' color={`#ff00ff`} onPress={()=>{registerUser();showToastWithGravity()}}/>
       </View>
+
+      <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
+        <Text style={{fontSize:18}}>Go to Login Page</Text>
+      </TouchableOpacity>
 
     </View>
   )

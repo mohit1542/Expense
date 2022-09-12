@@ -1,9 +1,11 @@
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useState,Component} from 'react'
 import { Text, View,Button, ActivityIndicator, Alert,  } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
 import Parse from 'parse/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ReactDOM } from 'react';
+
 
 export default function LoginScreen() {
 
@@ -11,6 +13,9 @@ export default function LoginScreen() {
   const [email, setEmail]= useState('');
   const [password, setPassword]= useState('');
   const [Loading, setLoading]=useState(false);
+  const [isLogged, setIsLogged]=useState(null)
+
+
   if (Loading){
     return (
       <View style={{top:'50%'}}>
@@ -19,13 +24,14 @@ export default function LoginScreen() {
     
     )
   }
-   
+
 
 
   const navigation=useNavigation();
 
 
     const userLogin=async function(){
+    
 
     const Email=email;
     const Password=password;
@@ -41,12 +47,20 @@ export default function LoginScreen() {
     .then(async(loggedInUser)=>{
       const currentUser=await Parse.User.currentAsync();
       console.log(loggedInUser===currentUser);
+      
       if(currentUser !== null){
-        //AsyncStorage.setItem("KeepUserLoggedIn", JSON.stringify(true));
-        navigation.navigate('BottomScreen')
+        const jsonValue=JSON.stringify(loggedInUser)
+        await AsyncStorage.setItem("KeepUserLoggedIn", jsonValue);     
+        navigation.reset({
+          index:0,
+          routes:[{name:"MainNavigator"}]
+        })
         setLoading(false)
+        setIsLogged(jsonValue)
+        return jsonValue;
       }
-      return currentUser;
+      return true
+      
       
     })
     .catch((error)=>{
@@ -54,7 +68,12 @@ export default function LoginScreen() {
       setLoading(false)
       return false;
       
-    });
+    })
+    .finally(()=>{
+      setEmail('')
+      setPassword('')
+      setLoading(false)
+    })
 
   }}
   

@@ -7,7 +7,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
-import Screen1 from "./Screen1";
 import Parse from "parse/react-native.js";
 
 
@@ -54,7 +53,7 @@ const Screen2 = () => {
       ExpenseAdd.set('date', date);
       await ExpenseAdd.save();
     } catch (error) {
-      alert('something went wrong')
+      console.log('something wrong')
     }
     }
 
@@ -119,8 +118,8 @@ const Screen2 = () => {
                 </View>
             </View>
 
-            <View style={{flex:2,alignItems:'center', marginTop:-120}}>
-                <Card style={{height:440, width:'85%', backgroundColor:'white', borderRadius:15, borderWidth:2, borderColor:'grey', shadowColor:'grey', shadowOffset:{width:0, height:2}, shadowOpacity:0.75, shadowRadius:8, elevation:5}}>
+            <View style={{flex:2,alignItems:'center', marginTop:-160}}>
+                <Card style={{height:500, width:'85%', backgroundColor:'white', borderRadius:15, borderWidth:2, borderColor:'grey', shadowColor:'grey', shadowOffset:{width:0, height:2}, shadowOpacity:0.75, shadowRadius:8, elevation:5}}>
                     <View style={{alignItems:'center'}}>
                         <TextInput style={styles.text1}
                             label={'Title'}
@@ -176,7 +175,7 @@ const Screen2 = () => {
                     onValueChange={(val) => setCategory(val)}
                 >
                     <Picker.Item label="Select Expense Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
-                    <Picker.Item label="Bills" value="bills" style={styles.pickerItem}/>
+                    <Picker.Item label="Bills" value="bills" style={styles.pickerItem} />
                     <Picker.Item label="Clothing" value="clothing" style={styles.pickerItem}/>
                     <Picker.Item label="Entertainment" value="entertainment" style={styles.pickerItem}/>
                     <Picker.Item label="Food and Drinks" value="food" style={styles.pickerItem}/>

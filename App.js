@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import "react-native-gesture-handler";
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationContainer} from '@react-navigation/native';
+import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { NavigationContainer, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from "@react-navigation/stack";
-import LoginScreen from "./VerifyScreen/LoginScreen";
-import BottomNavigator from "./routes/BottomNavigator";
-import RegisterScreen from "./VerifyScreen/RegisterScreen";
+import AuthNavigator from "./src/routes/AuthNavigator";
+import MainNavigator from "./src/routes/MainNavigator";
 import Parse from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StatusBar } from "expo-status-bar";
 
 
 
@@ -18,59 +18,36 @@ Parse.serverURL = 'https://parseapi.back4app.com/';
 
 
 
-const Stack = createStackNavigator()
-
 export default function App() {
 
-  const [isLogged, setIsLogged]=useState();
+  const [isLogged, setIsLogged]=useState(null)
+  
 
-  // const _retrieveData= async()=>{
-  //   try {
-  //     const data= await AsyncStorage.getItem("KeepUserLoggedIn");
-  //     console.log(data)
-  //     setIsLogged(data)
-  //   } catch (error) {
-      
-  //   }
-  // }
+  const getData= async()=>{
+    try {
+      const user= await AsyncStorage.getItem("KeepUserLoggedIn");
+      console.log(user)
+      setIsLogged(user)
+      //return user !== null ? JSON.parse(user) : null;
+    } catch (error) {
+      console.log('error in fetching data')
+    }
+  }
 
-  // useEffect(()=>{
-  //   _retrieveData()
-  // })
+  useEffect(()=>{
+    getData()
+  },[isLogged])
+
 
 
   return(
+
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{headerShown: false}}
-      
-      />
-
-      <Stack.Screen
-        name="BottomScreen"
-        component={BottomNavigator}
-        options={{headerShown: false}}
-      />
-
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{headerShown: false}}
-      />
-    </Stack.Navigator>
+        <StatusBar style="light"/>
+        {isLogged? <MainNavigator/> : <AuthNavigator/>}
     </NavigationContainer>
-  );
+      
+  )
+}
 
-  }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 

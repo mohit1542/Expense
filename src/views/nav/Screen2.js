@@ -117,9 +117,12 @@ const Screen2 = () => {
                     </View>
                 </View>
             </View>
+      
 
-            <View style={{flex:2,alignItems:'center', marginTop:-160}}>
+            <View style={{flex:2,alignItems:'center', marginTop:-150}}>
+                
                 <Card style={{height:500, width:'85%', backgroundColor:'white', borderRadius:15, borderWidth:2, borderColor:'grey', shadowColor:'grey', shadowOffset:{width:0, height:2}, shadowOpacity:0.75, shadowRadius:8, elevation:5}}>
+                
                     <View style={{alignItems:'center'}}>
                         <TextInput style={styles.text1}
                             label={'Title'}
@@ -136,8 +139,8 @@ const Screen2 = () => {
                             
                         />
 
-                    <View style={{width:'90%', borderWidth:1, marginTop:20, borderColor:'grey'}}>
-                    <Picker style={styles.picker1}
+                        <View style={{width:'90%', borderWidth:1, marginTop:20, borderColor:'grey'}}>
+                        <Picker style={styles.picker1}
                         mode={'dropdown'}
                         selectedValue={pick}
                         onValueChange={(value)=>setPick(value)}
@@ -147,15 +150,15 @@ const Screen2 = () => {
                         <Picker.Item label="Expense" value={'expense'} style={styles.pickerItem}/>
                         <Picker.Item label="Income" value={'income'} style={styles.pickerItem}/>
                         
-                    </Picker>
-                    {pick == "income" ? (
+                        </Picker>
+                        {pick == "income" ? (
                         <Picker
                         style={styles.picker1}
                         mode="dropdown"
                         dropdownIconColor={Colors.DARK_GRAY}
                         selectedValue={category}
                         onValueChange={(val) => setCategory(val)}
-                    >
+                        >
                         <Picker.Item label="Select Income Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
                         <Picker.Item label="Allowance" value="allowance" style={styles.pickerItem}/>
                         <Picker.Item label="Commission" value="comission" style={styles.pickerItem}/>
@@ -165,29 +168,29 @@ const Screen2 = () => {
                         <Picker.Item label="Salary" value="salary" style={styles.pickerItem}/>
                         <Picker.Item label="Selling" value="selling" style={styles.pickerItem}/>
                         <Picker.Item label="Miscellaneous" value="misc-income" style={styles.pickerItem}/>
-                    </Picker>
-                    ) : pick=="expense" ?(
+                        </Picker>
+                        ) : pick=="expense" ?(
                         <Picker
-                    style={styles.picker1}
-                    mode="dropdown"
-                    dropdownIconColor={Colors.DARK_GRAY}
-                    selectedValue={category}
-                    onValueChange={(val) => setCategory(val)}
-                >
-                    <Picker.Item label="Select Expense Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
-                    <Picker.Item label="Bills" value="bills" style={styles.pickerItem} />
-                    <Picker.Item label="Clothing" value="clothing" style={styles.pickerItem}/>
-                    <Picker.Item label="Entertainment" value="entertainment" style={styles.pickerItem}/>
-                    <Picker.Item label="Food and Drinks" value="food" style={styles.pickerItem}/>
-                    <Picker.Item label="Purchases" value="purchases" style={styles.pickerItem}/>
-                    <Picker.Item label="Subscriptions" value="subscriptions" style={styles.pickerItem}/>
-                    <Picker.Item label="Transportation" value="transportation" style={styles.pickerItem}/>
-                    <Picker.Item label="Miscellaneous" value="misc-expense" style={styles.pickerItem}/>
-                </Picker>
-                    ):null}
+                        style={styles.picker1}
+                        mode="dropdown"
+                        dropdownIconColor={Colors.DARK_GRAY}
+                        selectedValue={category}
+                        onValueChange={(val) => setCategory(val)}
+                        >
+                        <Picker.Item label="Select Expense Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
+                        <Picker.Item label="Bills" value="bills" style={styles.pickerItem} />
+                        <Picker.Item label="Clothing" value="clothing" style={styles.pickerItem}/>
+                        <Picker.Item label="Entertainment" value="entertainment" style={styles.pickerItem}/>
+                        <Picker.Item label="Food and Drinks" value="food" style={styles.pickerItem}/>
+                        <Picker.Item label="Purchases" value="purchases" style={styles.pickerItem}/>
+                        <Picker.Item label="Subscriptions" value="subscriptions" style={styles.pickerItem}/>
+                        <Picker.Item label="Transportation" value="transportation" style={styles.pickerItem}/>
+                        <Picker.Item label="Miscellaneous" value="misc-expense" style={styles.pickerItem}/>
+                        </Picker>
+                        ):null}
 
 
-                    </View>
+                        </View>
 
                         
                         <TextInput style={styles.text1}
@@ -229,12 +232,10 @@ const Screen2 = () => {
                             maxLength={80}
                         />
 
-
-
-
                     </View>
                 
                 </Card>
+                
 
                 <View style={{width:'50%',marginTop:15}}>
                     <Button
@@ -247,9 +248,7 @@ const Screen2 = () => {
                  </View>
 
             </View>
-
-            
-   
+        
         </View>
     )
 }

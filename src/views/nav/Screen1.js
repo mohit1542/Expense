@@ -35,48 +35,8 @@ const Screen1 =()=>{
     const [username, setUsername]=useState('')
     const [Loading, setLoading]=useState(false);
     const [refresh, setRefresh] = useState(false)
-
-
-
-    // const getUserData =async()=>{
-    //     const Expense = Parse.Object.extend('Expense');
-    //     const query = new Parse.Query(Expense);
-    //     query.equalTo('text', 'Hello')
-    //     // You can also query by using a parameter of an object
-    //     // query.equalTo('objectId', 'xKue915KBG');
-    //     try {
-    //       const results = await query.find()
-    //       for (const object of results) {
-    //         // Access the Parse Object attributes using the .GET method
-    //         const category = object.get('category')
-    //         // const date = object.get('date')
-    //         // const amount = object.get('amount')
-    //         // const text = object.get('text')
-    //         // const note = object.get('note')
-    //         setMydata('no change')
-    //         console.log(category);
-    //         // console.log(date);
-    //         // console.log(amount);
-    //         // console.log(text);
-    //         // console.log(note);
-    //       }
-    //       return true
-          
-    //     } catch (error) {
-    //       console.error('Error while fetching Expense', error);
-    //     }
-        
-    //   }
-
-      
-
-    //   useEffect(()=>{
-    //     getUserData();
-    //     console.log(mydata)
-    // },[])
-    
-
-    //const url="https://parseapi.back4app.com/classes/Expense"
+    const [transactions, setTransactions] = useState([])
+    const [balance, setBalance] = useState("0")
 
 
     const fetchTransactions = async() => {
@@ -112,13 +72,30 @@ const Screen1 =()=>{
 
     useEffect(()=>{
         fetchTransactions();
-        //console.log(mydata);
+        console.log(mydata);
     },[])
 
 
     const onRefresh=()=>{
         setRefresh(true);
         fetchTransactions();
+    }
+
+
+    const deleteTransactions=()=>{
+            Alert.alert("Are you sure", "Do you want to delete this transaction?",
+            [
+                {
+                text:'Cancel',
+                onPress:()=>console.log("Cancel"),
+                style:'cancel',   // this is for ios
+                },
+                {
+                text:'Yes',
+                onPress:() => console.log('Deleted')
+                }
+            ]
+            )
     }
 
 
@@ -149,9 +126,8 @@ const Screen1 =()=>{
                 
                 console.log('removed',rm)
                 Alert.alert('Logout successfully')
-                
+
                 return true
-                
             }
 
             
@@ -162,53 +138,6 @@ const Screen1 =()=>{
         })
         .finally(() => setLoading(false))
     }
-
-
-    
-
-    // fetch data
-    //   const fetchPerson = async()=> {
-    //     //create your Parse Query using the Person Class you've created
-    //     let query = new Parse.Query('Expense');
-    //     //run the query to retrieve all objects on Person class, optionally you can add your filters
-    //     let queryResult = await query.find();
-    //     //the resul is an arry of objects. Pick the first result 
-    //     const currentPerson = queryResult[1];
-    //     //access the Parse Object attributes
-    //     console.log('person id: ', currentPerson.get('text'));
-    //     console.log('person name: ', currentPerson.get('category'));
-    //     console.log('person email: ', currentPerson.get('amount'));
-        
-        
-        
-    //   }
-
-    //   useEffect(()=>{
-    //     fetchPerson()
-    //   },[])
-
-
-    // fetch data by rest api
-
-    // const getUserData =async()=>{
-    //     try {
-    //         const response=await fetch("https://parseapi.back4app.com/classes/Expense");
-    //         const realData =response.json();
-    //         setMydata(realData);
-    //         console.log(realData)
-    //     } catch (error) {
-    //         console.log('check again ,not able to fetch')
-    //     }
-        
-    // };
-
-    // useEffect(()=>{
-    //     getUserData()
-    // },[])
-
-
-    
-    
 
 
 
@@ -260,6 +189,8 @@ const Screen1 =()=>{
             timeofDay='Evening'
             AvatarShow= <Avatar.Image size={24} source={require('../../../assets/greetImage/eveningSun.png')} />      
           }
+
+
 
 
     
@@ -365,6 +296,7 @@ const Screen1 =()=>{
                 <View style={{flexDirection:'row', marginTop:40}}>
                     <Entypo name="arrow-with-circle-down" size={24} color="white"/>
                     <Text style={{marginLeft:6, color:'white', fontWeight:'bold',fontSize:18}}>Income</Text>
+                    <Text style={{marginLeft:6, color:'white', fontWeight:'bold',fontSize:18}}>50</Text>
                 </View>
                 <View style={{flexDirection:'row', marginTop:40,marginLeft:100}}>
                     <Entypo name="arrow-with-circle-up" size={24} color="white"/>
@@ -402,20 +334,100 @@ const Screen1 =()=>{
         keyExtractor={(item) => item.objectId}
         data={mydata}
         renderItem={({item}) => (
+            <TouchableOpacity
+            onLongPress={()=>{deleteTransactions()}}
+            >
             <View style={styles.items}>
-                {/* <Avatar.Image size={45} marginLeft={-5} source={{uri:item.avatarUrl}}/> */}
-                <View style={{ flex:0.5}}>
-                <Text style={styles.flatText1}> {item.category} </Text>
+                
+                <View style={{flex:0.13}}>
+                    {
+                    item.category=="salary"?
+                    (
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
+                    ) : item.category=="selling" ? (
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
+                    ): item.category=="allowance"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
+                    ): item.category=="comission"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
+                    ): item.category=="gifts"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
+                    ): item.category=="interests"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/interests.png')}/>
+                    ): item.category=="investments"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
+                    ): item.category=="misc-income"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/miscellaneous.png')}/>
+                    ): item.category=="bills"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/bill.png')}/>
+                    ): item.category=="clothing"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/clothing.png')}/>
+                    ): item.category=="entertainment"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/entertainment.png')}/>
+                    ): item.category=="food"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/food.png')}/>
+                    ): item.category=="purchases"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/purchases.png')}/>
+                    ): item.category=="subscriptions"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/subscribe.png')}/>
+                    ): item.category=="transportation"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/transportation.png')}/>
+                    ): item.category=="misc-expense"?(
+                        <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/miscellaneous.png')}/>
+                    ):null}
+                    
                 </View>
-                <View style={{flex:0.5}}>
-                <Text style={styles.flatText2}> {item.amount} </Text>
+
+
+                <View style={{ flex:0.45, }}>
+                    <Text style={styles.flatText1}> {item.category} </Text>
+                </View>
+
+                <View style={{flex:0.35}}>
+                    {
+                    item.category=="salary"?
+                    (
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ) : item.category=="selling" ? (
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="allowance"?(
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="comission"?(
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="gifts"?(
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="interests"?(
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="investments"?(
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="misc-income"?(
+                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                    ): item.category=="bills"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="clothing"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="entertainment"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="food"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="purchases"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="subscriptions"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="transportation"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ): item.category=="misc-expense"?(
+                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                    ):null}
+                    
                 </View>
             </View>
+            </TouchableOpacity>
         )}/>
 
         <View style={{flex: 1, paddingTop: StatusBar.currentHeight, paddingHorizontal: 10}}>
             <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('Screen2')}>
-                <AntDesign name="plus" size={26} color="white" />
+                <AntDesign name="plus" size={24} color="white" />
             </TouchableOpacity>
         </View>
         
@@ -425,6 +437,9 @@ const Screen1 =()=>{
       </DrawerLayoutAndroid>
     )
 }
+
+
+
 
 
 
@@ -472,17 +487,26 @@ const styles=StyleSheet.create({
         borderColor:'#dcdcdc',
         backgroundColor:'white',
         marginTop:0,
+        justifyContent:'space-between'
     },
     flatText1:{
-        marginLeft:'8%',
+        marginLeft:'2%',
         marginTop:8,
         fontSize:18,
     },
     flatText2:{
         fontSize:18,
         marginTop:8,
-        left:'45%',
+        marginLeft:'20%',
         color:'green',
+        fontWeight:'bold'
+    },
+    flatText3:{
+        fontSize:18,
+        marginTop:8,
+        marginLeft:'20%',
+        color:'red',
+        fontWeight:'bold'
     },
     paragraph:{
         marginTop:200,
@@ -491,11 +515,11 @@ const styles=StyleSheet.create({
     fab: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 63,
-        height: 63, 
+        width: 55,
+        height: 55, 
         position: 'absolute',
         bottom: 10,
-        right: 28,
+        right: 30,
         backgroundColor:'purple',
         borderRadius: 100,
         shadowColor: '#000000',

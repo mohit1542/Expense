@@ -29,14 +29,13 @@ import axios from "axios"
 const Screen1 =()=>{
 
     const [mydata, setMydata]=useState([]);
-    const drawer = useRef(null);
-    const [drawerPosition, setDrawerPosition] = useState("left");
-    const [person,setPerson]=useState('')
     const [username, setUsername]=useState('')
     const [Loading, setLoading]=useState(false);
     const [refresh, setRefresh] = useState(false)
     const [transactions, setTransactions] = useState([])
-    const [balance, setBalance] = useState("0")
+    const [balance, setBalance] = useState('0')
+    const [profit, setProfit] = useState("0")
+    const [expense, setExpense] = useState("0")
 
 
     const fetchTransactions = async() => {
@@ -53,7 +52,12 @@ const Screen1 =()=>{
             .then((response)=>{
                 var json=response.data.results
                 setMydata([...json.reverse()])
-                // setMydata([...json.reverse()])
+                calculateBalance(json)
+                TotalPositive(json)
+                totalNegative(json)
+                console.log(balance)
+                console.log(profit)
+                console.log(expense)    
                 // console.log("response",JSON.stringify(response.data.objectId))
                 // console.log("response",JSON.stringify(response.data.category))
             })
@@ -70,19 +74,85 @@ const Screen1 =()=>{
         }
     }
 
+
     useEffect(()=>{
         fetchTransactions();
-        console.log(mydata);
+        //console.log(mydata);
     },[])
-
 
     const onRefresh=()=>{
         setRefresh(true);
         fetchTransactions();
     }
 
+    const calculateBalance=(mydata)=>{
+        var balance=0
+        if(mydata != null){
+            mydata.map(it=>{
+                if( it.category=="allowance" || it.category=="comission"
+                || it.category=="gifts" || it.category=="interests"
+                || it.category=="investments" || it.category=="salary"
+                || it.category=="selling" || it.category=="misc-income"){
+                balance=balance + Number(it.amount)}
 
-    const deleteTransactions=()=>{
+                else{balance=balance - Number(it.amount)}
+                //console.log(balance)
+            })
+            
+            setBalance(balance.toString())
+        }
+        return true
+    }
+
+
+    const TotalPositive=(mydata)=>{
+        var pos=0
+        if(mydata != null){
+            mydata.map(it=>{
+                if(it.amount>=0 && it.category=="allowance" || it.category=="comission"
+                || it.category=="gifts" || it.category=="interests"
+                || it.category=="investments" || it.category=="salary"
+                || it.category=="selling" || it.category=="misc-income"){
+                    pos =pos+Number(it.amount);
+                }
+            })
+            setProfit(pos.toString())
+        }
+    }
+
+    const totalNegative = (mydata) => {
+        var neg = 0;
+        if(mydata != null) {
+            mydata.map(it => {
+                if(it.category=="food" || it.category=="bills" 
+                || it.category=="clothing" || it.category=="entertainment"
+                || it.category=="purchases" || it.category=="subscriptions" 
+                || it.category=="transportation" || it.category=="misc-expense") {
+                    neg = neg - Number(it.amount);
+                }
+            })
+            setExpense(neg.toString())
+        }
+    }
+
+    
+
+
+    const deleteTransactions=async()=>{
+        let transaction=new Parse.Object("Expense")
+        transaction.set('objectId', 'ekH6t1RIps')
+
+        try{
+            await transaction.destroy()
+            return true
+        } catch(error){
+            Alert.alert("Error", error.message)
+            return false
+        }
+    }
+
+
+    const deleteAlert=()=>{
             Alert.alert("Are you sure", "Do you want to delete this transaction?",
             [
                 {
@@ -92,25 +162,12 @@ const Screen1 =()=>{
                 },
                 {
                 text:'Yes',
-                onPress:() => console.log('Deleted')
+                onPress:() => deleteTransactions()
                 }
             ]
             )
     }
 
-
-    // const [list,setList]=useState([
-    //     {name : mydata, id:'1', avatarUrl: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?"},
-    //     {name : 'virat', id:'2',avatarUrl: "https://m.cricbuzz.com/a/img/v1/192x192/i1/c170661/virat-kohli.jpg"},
-    //     {name : 'Mr. 360', id:'3', avatarUrl:"https://c.ndtvimg.com/2021-11/u756k9jg_ab-de-villiers_625x300_19_November_21.jpg"},
-    //     {name : 'Saiee', id:'4',avatarUrl:'https://starsbiog.com/wp-content/uploads/2020/04/Saiee-Manjrekar.jpg'},
-    //     {name : 'Ravi', id:'5'},
-    //     {name : 'm6', id:'6'},
-    //     {name : 'm7', id:'7'},
-    //     {name : 'm8', id:'8'},
-    //     {name : 'm9', id:'9'},
-    //     {name : 'm10', id:'10'},
-    // ])
 
     const doUserLogOut = async () => {
         setLoading(true)
@@ -140,35 +197,6 @@ const Screen1 =()=>{
     }
 
 
-
-    const navigationView = () => (
-        <View style={{flexDirection:'column', flex:1}}>
-            <View style={{flex:0.3, backgroundColor:'skyblue', borderBottomWidth:2, borderBottomColor:'violet'}}>
-            <Avatar.Image  style={{marginLeft:20, marginTop:50}} size={45} source={{uri:'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?'}}/>
-            <Text style={{marginLeft:25, fontSize:25, fontWeight:'bold'}}>Mohit</Text>
-            <Text style={{marginLeft:25, fontSize:15,}}>mohit@gmail.com</Text>
-            </View>
-
-            <View style={{flex:1, backgroundColor:'grey'}}>
-            <Text>this is other partition</Text>
-        
-          <Text style={styles.paragraph}>I'm in the Drawer!</Text>
-          <Button
-            title="Close drawer"
-            onPress={() => drawer.current.closeDrawer()}
-          />
-
-        <TouchableOpacity style={{height: 40, width: '100%', alignItems: 'center', justifyContent: 'center'}}
-            onPress={doUserLogOut}
-        >
-            {Loading ? <ActivityIndicator size={'small'} color='white' /> : <Text>Logout</Text>}
-        </TouchableOpacity>
-          </View>
-          
-        </View>
-    );
-
-
     //set greeting time
 
         let AvatarShow;
@@ -178,24 +206,18 @@ const Screen1 =()=>{
 
         if (hours < 12) {
             timeofDay = 'Morning';
-            AvatarShow= <Avatar.Image size={20} source={require('../../../assets/greetImage/morningSun.png')} />
+            AvatarShow= <Avatar.Image style={{backgroundColor:'yellow'}} size={20} source={require('../../../assets/greetImage/morningSun.png')} />
             
           } else if (hours >= 12 && hours < 17) {
             timeofDay = 'Afternoon';
-            AvatarShow= <Avatar.Image size={15} source={require('../../../assets/greetImage/morningSun.png')} />
+            AvatarShow= <Avatar.Image style={{backgroundColor:'orange'}} size={15} source={require('../../../assets/greetImage/morningSun.png')} />
             
             
           } else {
             timeofDay='Evening'
-            AvatarShow= <Avatar.Image size={24} source={require('../../../assets/greetImage/eveningSun.png')} />      
+            AvatarShow= <Avatar.Image style={{backgroundColor:'grey'}} size={24} source={require('../../../assets/greetImage/eveningSun.png')} />      
           }
-
-
-
-
-    
-
-          
+  
 
     // set greet name
       
@@ -219,15 +241,6 @@ const Screen1 =()=>{
     const navigation=useNavigation();
 
 
-    // const storeData =async(value)=>{
-    //     try {
-    //         await AsyncStorage.setItem('ListItem','Statistics')
-    //         navigation.navigate('Stats')
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-
     const itemseparate=()=>{
         return (
             <View style={styles.separate}></View>
@@ -241,74 +254,73 @@ const Screen1 =()=>{
     }
     
     return (
-        <DrawerLayoutAndroid
-        ref={drawer}
-        drawerWidth={280}
-        drawerPosition={drawerPosition}
-        renderNavigationView={navigationView}>
+        
         <View style={{flex:1, backgroundColor:'white'}}>
-        {/* <ImageBackground style={styles.backimage} source={{uri:'https://i.pinimg.com/736x/04/34/89/043489e7922dabf9902965b964ca04a5.jpg'}}> */}
+
+            <View style={{backgroundColor:'#f0e68c', height:380, borderBottomLeftRadius:40}}>
+
+                <View style={{backgroundColor:'#afeeee', height:260, borderBottomLeftRadius:40}}>
 
 
-        <View style={{backgroundColor:'#f0e68c', height:380, borderBottomLeftRadius:40}}>
+                    <View style={styles.greet}>
+                        <View style={{flex:0.6,flexWrap:'wrap', marginLeft:15}}>
+                            <Text style={{fontSize:18, color:'white'}}>Good {timeofDay} {AvatarShow} </Text>
+                            <Text style={{marginLeft:40,fontSize:30, fontWeight:'bold', color:'white'}}> {username} </Text>
+                        </View>
 
-         <View style={{backgroundColor:'#afeeee', height:260, borderBottomLeftRadius:40}}>
+                        <View style={{flex:0.08,right:'5%',}}>
+                        <TouchableOpacity >
+                            <Ionicons name="notifications" size={28} color="blue" />
+                        </TouchableOpacity>
+                        </View>
 
-           <View style={{marginTop:35, marginEnd:'88%'}}>
-            <TouchableOpacity onPress={()=> drawer.current.openDrawer()}>
-           <Ionicons name="reorder-three-outline" size={40} color="black" />
-           </TouchableOpacity>
-           </View>
+                    </View>
 
-
-            <View style={styles.greet}>
-                <View style={{flex:0.6,flexWrap:'wrap', marginLeft:15}}>
-                <Text style={{fontSize:18, color:'white'}}>Good {timeofDay} {AvatarShow} </Text>
-                <Text style={{marginLeft:40,fontSize:30, fontWeight:'bold', color:'white'}}> {username} </Text>
-                </View>
-                <View style={{flex:0.1, flexWrap:'wrap', marginRight:15}}>
-                <TouchableOpacity>
-                    <Ionicons name="notifications" size={26} color="blue" />
-                </TouchableOpacity>
+                    <View style={{ bottom:'38%', left:'85%', width:'8%'}}>
+                    <TouchableOpacity  onPress={doUserLogOut}>
+                        <AntDesign name="logout" size={24} color="black" />
+                    </TouchableOpacity>
+                    </View>
+            
                 </View>
             </View>
-
-            <TouchableOpacity style={{left:300, bottom:100}} onPress={doUserLogOut}>
-            <AntDesign name="logout" size={24} color="black" />
-            </TouchableOpacity>
-            
-            
-            
-        </View>
-        </View>
-        <View>
-        <Card  style={{shadowColor:'black',shadowOffset:{width:1, height:2},shadowOpacity:0.50,shadowRadius:5,elevation:10,backgroundColor:'#7b68ee', height:175, width:325, margin:18,marginTop:-200,justifyContent:'center', borderRadius:15,}}>
-            <Card.Content style={{justifyContent:'center', alignItems:'center'}}>
-
-            <View style={{flexDirection:'row', marginTop:15}}>
-                    <Image source={require('../../../assets/Images/chip1.png')} style={{width:50, height:50, marginLeft:-50}}/>
-                    <Text style={{marginLeft:50, fontSize:20, fontWeight:'bold',color:'white'}}>Total Balance</Text>
-                    <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-            </View>
+        
+        <Card style={{shadowColor:'black',shadowOffset:{width:1, height:2},shadowOpacity:0.50,shadowRadius:5,elevation:10,backgroundColor:'#7b68ee', height:175, width:325, margin:18,marginTop:-200,justifyContent:'center', borderRadius:15,}}>
+            <Card.Content>
+    
+                    <View style={{ height:'45%'}}>
+                        <View style={{flexDirection:'row'}}>
+                            <Image source={require('../../../assets/Images/chip1.png')} style={{width:50, height:50}}/>
+                            <Text style={{left:'50%', fontSize:20,color:'white'}}>Total Balance</Text>
+                            <MaterialIcons style={{left:'45%'}} name="arrow-drop-down" size={28} color="black" />
+                        </View>
+                        <View >
+                            <Text style={{left:'38%',fontSize:20, fontWeight:'bold',color:'white', bottom:'70%'}}>{balance}</Text>
+                        </View>
+                    </View>
             
 
-            <View style={{flexDirection:'row'}}>
-                <View style={{flexDirection:'row', marginTop:40}}>
-                    <Entypo name="arrow-with-circle-down" size={24} color="white"/>
-                    <Text style={{marginLeft:6, color:'white', fontWeight:'bold',fontSize:18}}>Income</Text>
-                    <Text style={{marginLeft:6, color:'white', fontWeight:'bold',fontSize:18}}>50</Text>
-                </View>
-                <View style={{flexDirection:'row', marginTop:40,marginLeft:100}}>
-                    <Entypo name="arrow-with-circle-up" size={24} color="white"/>
-                    <Text style={{marginLeft:6, color:'white', fontSize:18, fontWeight:'bold'}}>Expense</Text>
-                </View>  
-            </View>
+                    <View style={{flexDirection:'row', marginTop:'2%',height:'50%'}}>
+                        <View style={{flex:0.5,flexDirection:'row', marginTop:'5%', flexWrap:'wrap'}}>
+                            <Entypo name="arrow-with-circle-down" size={24} color="white"/>
+                            <Text style={{marginLeft:'5%', color:'white',fontSize:18}}>Income</Text>
+                            <Text style={{left:'50%', color:'white', fontWeight:'bold',fontSize:18}}>{profit}</Text>
+                        </View>
+
+                        <View style={{flex:0.5,flexDirection:'row', marginTop:'5%', flexWrap:'wrap'}}>
+                            <Entypo name="arrow-with-circle-up" size={24} color="white"/>
+                            <Text style={{marginLeft:'5%', color:'white', fontSize:18}}>Expense</Text>
+                            <Text style={{left:'50%', color:'white', fontSize:18, fontWeight:'bold'}}>{expense}</Text>
+                        </View>
+                        
+                          
+                    </View>
     
             
             </Card.Content>
         </Card>
         
-        </View>
+
 
         <View style={{marginTop:10, flexDirection:'row',marginBottom:10, justifyContent:'space-between'}}>
             <View style={{flex:0.5 }}>
@@ -335,10 +347,9 @@ const Screen1 =()=>{
         data={mydata}
         renderItem={({item}) => (
             <TouchableOpacity
-            onLongPress={()=>{deleteTransactions()}}
+            onLongPress={()=>{deleteAlert()}}
             >
             <View style={styles.items}>
-                
                 <View style={{flex:0.13}}>
                     {
                     item.category=="salary"?
@@ -433,13 +444,8 @@ const Screen1 =()=>{
         
       </View>
 
-    
-      </DrawerLayoutAndroid>
     )
 }
-
-
-
 
 
 
@@ -449,7 +455,8 @@ const styles=StyleSheet.create({
         flexDirection:'row',
         flex:1,
         flexWrap:'wrap',
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        top:'20%'
         
     },
     backimage:{
@@ -463,31 +470,29 @@ const styles=StyleSheet.create({
         color:'black',
         fontWeight:'500',
         fontSize:15,
-        marginLeft:-260
+        left:'8%',
+        width:'20%'
     },
     separate:{
-        height:0.5,
+        height:5,
         width:'90%',
         marginLeft:20,
         
     },
     listHeader:{
         height:35,
-        alignItems:'center',
-        justifyContent:'center',
+        justifyContent:'center'
     },
     items:{
         flexDirection:'row',
         flex:1,
-        marginLeft:10,
-        marginRight:10,
+        marginHorizontal:'2%',
         padding:12,
-        borderRadius:5,
+        borderRadius:10,
         borderBottomWidth:1,
-        borderColor:'#dcdcdc',
-        backgroundColor:'white',
-        marginTop:0,
-        justifyContent:'space-between'
+        borderBottomColor:'grey',
+        justifyContent:'space-between',
+        width:'96%'
     },
     flatText1:{
         marginLeft:'2%',
@@ -497,14 +502,14 @@ const styles=StyleSheet.create({
     flatText2:{
         fontSize:18,
         marginTop:8,
-        marginLeft:'20%',
+        marginLeft:'15%',
         color:'green',
         fontWeight:'bold'
     },
     flatText3:{
         fontSize:18,
         marginTop:8,
-        marginLeft:'20%',
+        marginLeft:'15%',
         color:'red',
         fontWeight:'bold'
     },

@@ -57,10 +57,6 @@ const Screen2 = () => {
     }
     }
 
-
-
-
-
     // const onChange = (event, selectedDate) => {
     //     const currentDate = selectedDate;
     //     setDate(currentDate);
@@ -105,14 +101,14 @@ const Screen2 = () => {
     return (
         <View style={{flex:1}}>
             <View style={{flex:1,backgroundColor:'#ffa500', height:250, borderBottomRightRadius:50, borderBottomLeftRadius:50, alignItems:'center',justifyContent:'center'}}>
-                <View style={{flexDirection:'row-reverse',flexWrap:'wrap',justifyContent:'space-between',marginBottom:'25%'}}>
+                <View style={{flexDirection:'row-reverse',flexWrap:'wrap',justifyContent:'space-between',marginBottom:'35%'}}>
                     <View style={{flex:0.9, marginLeft:100}}>
                         <Text style={{fontSize:18, fontWeight:'bold'}}>Add Expense</Text>
                     </View>
 
                     <View style={{flex:0.1,right:10}}>
                         <TouchableOpacity onPress={()=>navigation.navigate('Screen1')}>
-                            <Ionicons style={{}} name="arrow-back-sharp" size={24} color="black" />
+                            <Ionicons  name="arrow-back-sharp" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -126,7 +122,6 @@ const Screen2 = () => {
                     <View style={{alignItems:'center'}}>
                         <TextInput style={styles.text1}
                             label={'Title'}
-                            placeholder={'TItle'}
                             value={text}
                             onChangeText={text=>setText(text)}
                             mode={"outlined"}
@@ -140,54 +135,57 @@ const Screen2 = () => {
                         />
 
                         <View style={{width:'90%', borderWidth:1, marginTop:20, borderColor:'grey'}}>
-                        <Picker style={styles.picker1}
-                        mode={'dropdown'}
-                        selectedValue={pick}
-                        onValueChange={(value)=>setPick(value)}
-                        dropdownIconColor={'grey'}
-                        >
-                        <Picker.Item label="Select" value={'select'} style={{color:'grey'}}/>
-                        <Picker.Item label="Expense" value={'expense'} style={styles.pickerItem}/>
-                        <Picker.Item label="Income" value={'income'} style={styles.pickerItem}/>
+                            <Picker style={styles.picker1}
+                                mode={'dropdown'}
+                                selectedValue={pick}
+                                onValueChange={(value)=>setPick(value)}
+                                dropdownIconColor={'grey'}
+                            >
+                                <Picker.Item label="Select" value={'select'} style={{color:'grey'}}/>
+                                <Picker.Item label="Expense" value={'expense'} style={styles.pickerItem}/>
+                                <Picker.Item label="Income" value={'income'} style={styles.pickerItem}/>
                         
-                        </Picker>
-                        {pick == "income" ? (
-                        <Picker
-                        style={styles.picker1}
-                        mode="dropdown"
-                        dropdownIconColor={Colors.DARK_GRAY}
-                        selectedValue={category}
-                        onValueChange={(val) => setCategory(val)}
-                        >
-                        <Picker.Item label="Select Income Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
-                        <Picker.Item label="Allowance" value="allowance" style={styles.pickerItem}/>
-                        <Picker.Item label="Commission" value="comission" style={styles.pickerItem}/>
-                        <Picker.Item label="Gifts" value="gifts" style={styles.pickerItem}/>
-                        <Picker.Item label="Interests" value="interests" style={styles.pickerItem}/>
-                        <Picker.Item label="Investments" value="investments" style={styles.pickerItem}/>
-                        <Picker.Item label="Salary" value="salary" style={styles.pickerItem}/>
-                        <Picker.Item label="Selling" value="selling" style={styles.pickerItem}/>
-                        <Picker.Item label="Miscellaneous" value="misc-income" style={styles.pickerItem}/>
-                        </Picker>
-                        ) : pick=="expense" ?(
-                        <Picker
-                        style={styles.picker1}
-                        mode="dropdown"
-                        dropdownIconColor={Colors.DARK_GRAY}
-                        selectedValue={category}
-                        onValueChange={(val) => setCategory(val)}
-                        >
-                        <Picker.Item label="Select Expense Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
-                        <Picker.Item label="Bills" value="bills" style={styles.pickerItem} />
-                        <Picker.Item label="Clothing" value="clothing" style={styles.pickerItem}/>
-                        <Picker.Item label="Entertainment" value="entertainment" style={styles.pickerItem}/>
-                        <Picker.Item label="Food and Drinks" value="food" style={styles.pickerItem}/>
-                        <Picker.Item label="Purchases" value="purchases" style={styles.pickerItem}/>
-                        <Picker.Item label="Subscriptions" value="subscriptions" style={styles.pickerItem}/>
-                        <Picker.Item label="Transportation" value="transportation" style={styles.pickerItem}/>
-                        <Picker.Item label="Miscellaneous" value="misc-expense" style={styles.pickerItem}/>
-                        </Picker>
-                        ):null}
+                            </Picker>
+
+                            {pick == "income" ? (
+                            <Picker
+                                style={styles.picker1}
+                                mode="dropdown"
+                                dropdownIconColor={Colors.DARK_GRAY}
+                                selectedValue={category}
+                                onValueChange={(val) => setCategory(val)}
+                            >
+                                <Picker.Item label="Select Income Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
+                                <Picker.Item label="Allowance" value="allowance" style={styles.pickerItem}/>
+                                <Picker.Item label="Commission" value="comission" style={styles.pickerItem}/>
+                                <Picker.Item label="Gifts" value="gifts" style={styles.pickerItem}/>
+                                <Picker.Item label="Interests" value="interests" style={styles.pickerItem}/>
+                                <Picker.Item label="Investments" value="investments" style={styles.pickerItem}/>
+                                <Picker.Item label="Salary" value="salary" style={styles.pickerItem}/>
+                                <Picker.Item label="Selling" value="selling" style={styles.pickerItem}/>
+                                <Picker.Item label="Miscellaneous" value="misc-income" style={styles.pickerItem}/>
+                            </Picker>
+
+                            ) : pick=="expense" ?(
+
+                            <Picker
+                                style={styles.picker1}
+                                mode="dropdown"
+                                dropdownIconColor={Colors.DARK_GRAY}
+                                selectedValue={category}
+                                onValueChange={(val) => setCategory(val)}
+                            >
+                                <Picker.Item label="Select Expense Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
+                                <Picker.Item label="Bills" value="bills" style={styles.pickerItem} />
+                                <Picker.Item label="Clothing" value="clothing" style={styles.pickerItem}/>
+                                <Picker.Item label="Entertainment" value="entertainment" style={styles.pickerItem}/>
+                                <Picker.Item label="Food and Drinks" value="food" style={styles.pickerItem}/>
+                                <Picker.Item label="Purchases" value="purchases" style={styles.pickerItem}/>
+                                <Picker.Item label="Subscriptions" value="subscriptions" style={styles.pickerItem}/>
+                                <Picker.Item label="Transportation" value="transportation" style={styles.pickerItem}/>
+                                <Picker.Item label="Miscellaneous" value="misc-expense" style={styles.pickerItem}/>
+                            </Picker>
+                            ):null}
 
 
                         </View>
@@ -237,15 +235,17 @@ const Screen2 = () => {
                 </Card>
                 
 
-                <View style={{width:'50%',marginTop:15}}>
-                    <Button
-                        title="Add"
-                        value={button}
-                        onPress= {()=>{
-                            checkTextInput();
-                            addExpense();
-                        }} />
-                 </View>
+    
+                    <View style={{width:'50%',marginTop:15}}>
+                        <Button
+                            title="Add"
+                            value={button}
+                            onPress= {()=>{
+                                checkTextInput();
+                                addExpense();
+                            }} 
+                        />
+                    </View>
 
             </View>
         

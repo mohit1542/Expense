@@ -12,8 +12,8 @@ import { Text,
     RefreshControl,
     BackHandler} from 'react-native'
 import AnimatedLottieView from 'lottie-react-native';
-import { StackActions, useNavigation } from '@react-navigation/native';
-import { Card,Title } from 'react-native-paper';
+import { StackActions, useIsFocused, useNavigation } from '@react-navigation/native';
+import { Card,ProgressBar,Title } from 'react-native-paper';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons'; 
 import { MaterialIcons } from '@expo/vector-icons';
@@ -22,27 +22,29 @@ import { AntDesign } from '@expo/vector-icons';
 import Parse, { Query } from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios"
+    
 
-
-
-
-const Screen1 =()=>{
+    const Screen1 =()=>{
 
     const [mydata, setMydata]=useState([]);
     const [username, setUsername]=useState('')
     const [Loading, setLoading]=useState(false);
     const [refresh, setRefresh] = useState(false)
     const [transactions, setTransactions] = useState([])
-    const [balance, setBalance] = useState('0')
-    const [profit, setProfit] = useState("0")
-    const [expense, setExpense] = useState("0")
+    const [balance, setBalance] = useState()
+    const [profit, setProfit] = useState()
+    const [expense, setExpense] = useState()
+    const [personData, setPersonData]=useState([]);
+    const [balanceloading, setBalanceLoading]=useState(false)
+    const focussed =useIsFocused()
 
 
     const fetchTransactions = async() => {
         try {
+            setBalanceLoading(true)
             await axios ({
-               method:'get',
-               url:'https://parseapi.back4app.com/classes/Expense',
+               method:'GET',
+               url:`https://parseapi.back4app.com/classes/Expense`,
                headers:{
                 'X-Parse-Application-Id' :'PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ',
                 'X-Parse-REST-API-Key': 'Z4eivtVtYlcvOKThJun2nX5fLrlwxJ0vtnNytExY',
@@ -50,16 +52,21 @@ const Screen1 =()=>{
                }
             })
             .then((response)=>{
-                var json=response.data.results
-                setMydata([...json.reverse()])
-                calculateBalance(json)
-                TotalPositive(json)
-                totalNegative(json)
-                console.log(balance)
-                console.log(profit)
-                console.log(expense)    
-                // console.log("response",JSON.stringify(response.data.objectId))
-                // console.log("response",JSON.stringify(response.data.category))
+                let json= response.data.results
+                //console.log(response.data.results[1].category)
+                //setMydata([...json.reverse()])
+                let filteredJSON= json.reverse().filter((val, i)=>{
+                    if(val.username == username){
+                    return val
+                    }
+                    })
+                    setMydata(filteredJSON)
+                    calculateBalance(filteredJSON)
+                    TotalPositive(filteredJSON)
+                    totalNegative(filteredJSON)
+                    // console.log(balance)
+                    // console.log(profit)
+                    // console.log(expense) 
             })
             .catch((error)=>{
                 alert('error', error)
@@ -71,23 +78,25 @@ const Screen1 =()=>{
         }
         finally{
             setRefresh(false)
+            setBalanceLoading(false)
         }
     }
-
-
-    useEffect(()=>{
-        fetchTransactions();
-        //console.log(mydata);
-    },[])
 
     const onRefresh=()=>{
         setRefresh(true);
         fetchTransactions();
     }
 
+    useEffect(()=>{
+        focussed && fetchTransactions();
+        console.log(mydata);
+    },[focussed])
+
+    
+
     const calculateBalance=(mydata)=>{
         var balance=0
-        if(mydata != null){
+        if(mydata !== null){
             mydata.map(it=>{
                 if( it.category=="allowance" || it.category=="comission"
                 || it.category=="gifts" || it.category=="interests"
@@ -135,24 +144,9 @@ const Screen1 =()=>{
         }
     }
 
-    
 
-
-    const deleteTransactions=async()=>{
-        let transaction=new Parse.Object("Expense")
-        transaction.set('objectId', 'ekH6t1RIps')
-
-        try{
-            await transaction.destroy()
-            return true
-        } catch(error){
-            Alert.alert("Error", error.message)
-            return false
-        }
-    }
-
-
-    const deleteAlert=()=>{
+            
+        const deleteAlert=(objectId)=>{
             Alert.alert("Are you sure", "Do you want to delete this transaction?",
             [
                 {
@@ -162,11 +156,36 @@ const Screen1 =()=>{
                 },
                 {
                 text:'Yes',
-                onPress:() => deleteTransactions()
+                onPress:async() => 
+                        {
+                            //deleteTransaction
+                            //console.log(objectId)
+                            await axios({
+                                method:'DELETE',
+                                url:`https://parseapi.back4app.com/classes/Expense/${objectId}`,
+                                headers:{
+                                    'X-Parse-Application-Id' :'PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ',
+                                    'X-Parse-REST-API-Key': 'Z4eivtVtYlcvOKThJun2nX5fLrlwxJ0vtnNytExY',
+                                    'content-type': 'application/json'
+                                   }
+                            })
+                            .then(()=>{
+                                //below things is not neccessory to write
+                                let filteredJSON=mydata.filter((val, i)=>{
+                                    if(val.objectId !==objectId){
+                                    return val
+                                    }
+                                    })
+                                    //console.log(filteredJSON)
+                                    setMydata(filteredJSON)
+                            })
+                            
+                        }
                 }
             ]
             )
     }
+
 
 
     const doUserLogOut = async () => {
@@ -286,16 +305,17 @@ const Screen1 =()=>{
             </View>
         
         <Card style={{shadowColor:'black',shadowOffset:{width:1, height:2},shadowOpacity:0.50,shadowRadius:5,elevation:10,backgroundColor:'#7b68ee', height:175, width:325, margin:18,marginTop:-200,justifyContent:'center', borderRadius:15,}}>
+            {balanceloading ? <ProgressBar indeterminate color='coral' /> : (
             <Card.Content>
-    
+            
                     <View style={{ height:'45%'}}>
                         <View style={{flexDirection:'row'}}>
                             <Image source={require('../../../assets/Images/chip1.png')} style={{width:50, height:50}}/>
                             <Text style={{left:'50%', fontSize:20,color:'white'}}>Total Balance</Text>
                             <MaterialIcons style={{left:'45%'}} name="arrow-drop-down" size={28} color="black" />
                         </View>
-                        <View >
-                            <Text style={{left:'38%',fontSize:20, fontWeight:'bold',color:'white', bottom:'70%'}}>{balance}</Text>
+                        <View style={{left:'42%'}}>
+                            <Text style={{fontSize:20, fontWeight:'bold',color:'white', bottom:'70%'}}>{balance}</Text>
                         </View>
                     </View>
             
@@ -303,21 +323,26 @@ const Screen1 =()=>{
                     <View style={{flexDirection:'row', marginTop:'2%',height:'50%'}}>
                         <View style={{flex:0.5,flexDirection:'row', marginTop:'5%', flexWrap:'wrap'}}>
                             <Entypo name="arrow-with-circle-down" size={24} color="white"/>
-                            <Text style={{marginLeft:'5%', color:'white',fontSize:18}}>Income</Text>
-                            <Text style={{left:'50%', color:'white', fontWeight:'bold',fontSize:18}}>{profit}</Text>
+                            <View style={{flexDirection:'column', marginLeft:'2%'}}>
+                                <Text style={{marginLeft:'5%', color:'white',fontSize:18}}>Income</Text>
+                                <Text style={{left:'25%', color:'white', fontWeight:'bold',fontSize:18}}>{profit}</Text>
+                            </View>
                         </View>
 
                         <View style={{flex:0.5,flexDirection:'row', marginTop:'5%', flexWrap:'wrap'}}>
                             <Entypo name="arrow-with-circle-up" size={24} color="white"/>
-                            <Text style={{marginLeft:'5%', color:'white', fontSize:18}}>Expense</Text>
-                            <Text style={{left:'50%', color:'white', fontSize:18, fontWeight:'bold'}}>{expense}</Text>
+                            <View style={{flexDirection:'column', marginLeft:'2%'}}>
+                                <Text style={{marginLeft:'5%', color:'white', fontSize:18}}>Expense</Text>
+                                <Text style={{left:'25%', color:'white', fontSize:18, fontWeight:'bold'}}>{expense}</Text>
+                            </View>
                         </View>
                         
                           
                     </View>
-    
+            
             
             </Card.Content>
+            )}
         </Card>
         
 
@@ -346,8 +371,9 @@ const Screen1 =()=>{
         keyExtractor={(item) => item.objectId}
         data={mydata}
         renderItem={({item}) => (
+            
             <TouchableOpacity
-            onLongPress={()=>{deleteAlert()}}
+            onLongPress={()=>{deleteAlert(item.objectId)}}
             >
             <View style={styles.items}>
                 <View style={{flex:0.13}}>

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Button,KeyboardAvoidingView, Platform, TouchableWithoutFeedback , ScrollView, Keyboard} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet, TouchableOpacity, Button,KeyboardAvoidingView, Platform, TouchableWithoutFeedback , ScrollView, Keyboard, Alert} from "react-native";
 import { Card,TextInput ,List, Avatar} from "react-native-paper";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { Picker } from "@react-native-picker/picker";
@@ -21,6 +21,7 @@ const Screen2 = () => {
     const [pick, setPick]=useState('')
     const [button, SetButton]=useState('')
     const [textInputName, setTextInputName] = useState('');
+    const [username, setUsername]= useState('')
 
 
 
@@ -40,8 +41,17 @@ const Screen2 = () => {
         alert('done! Your data is Added successfully');
       };
 
-
-    //add expense to db
+      //get current user
+    const getCurrentUser = async()=> {
+        const currentUser = await Parse.User.currentAsync();
+        if (currentUser !== null) {
+            setUsername(currentUser.getUsername())
+        }
+        return currentUser;
+      };
+      useEffect(()=>{
+        getCurrentUser()
+      },[username])
 
     async function addExpense(){
     try {
@@ -51,6 +61,7 @@ const Screen2 = () => {
       ExpenseAdd.set('amount', amount);
       ExpenseAdd.set('note', note);
       ExpenseAdd.set('date', date);
+      ExpenseAdd.set('username', username);
       await ExpenseAdd.save();
     } catch (error) {
       console.log('something wrong')
@@ -118,7 +129,6 @@ const Screen2 = () => {
             <View style={{flex:2,alignItems:'center', marginTop:-150}}>
                 
                 <Card style={{height:500, width:'85%', backgroundColor:'white', borderRadius:15, borderWidth:2, borderColor:'grey', shadowColor:'grey', shadowOffset:{width:0, height:2}, shadowOpacity:0.75, shadowRadius:8, elevation:5}}>
-                
                     <View style={{alignItems:'center'}}>
                         <TextInput style={styles.text1}
                             label={'Title'}

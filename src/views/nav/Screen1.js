@@ -5,7 +5,6 @@ import { Text,
     FlatList,
     StyleSheet, 
     TouchableOpacity,
-    DrawerLayoutAndroid,
     Button, StatusBar,
     ActivityIndicator,
     Alert,
@@ -15,28 +14,29 @@ import AnimatedLottieView from 'lottie-react-native';
 import { StackActions, useIsFocused, useNavigation } from '@react-navigation/native';
 import { Card,ProgressBar,Title } from 'react-native-paper';
 import { Entypo } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Avatar } from 'react-native-paper';
+import { Avatar,Modal, Portal, Provider } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import Parse, { Query } from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios"
+
     
 
-    const Screen1 =()=>{
+    const Statistics =()=>{
 
     const [mydata, setMydata]=useState([]);
     const [username, setUsername]=useState('')
     const [Loading, setLoading]=useState(false);
     const [refresh, setRefresh] = useState(false)
-    const [transactions, setTransactions] = useState([])
+    //const [transactions, setTransactions] = useState([])
     const [balance, setBalance] = useState()
     const [profit, setProfit] = useState()
     const [expense, setExpense] = useState()
-    const [personData, setPersonData]=useState([]);
+    //const [personData, setPersonData]=useState([]);
     const [balanceloading, setBalanceLoading]=useState(false)
-    const focussed =useIsFocused()
+    const focussed =useIsFocused()  
 
 
     const fetchTransactions = async() => {
@@ -89,10 +89,8 @@ import axios from "axios"
 
     useEffect(()=>{
         focussed && fetchTransactions();
-        console.log(mydata);
+        //console.log(mydata);
     },[focussed])
-
-    
 
     const calculateBalance=(mydata)=>{
         var balance=0
@@ -187,7 +185,6 @@ import axios from "axios"
     }
 
 
-
     const doUserLogOut = async () => {
         setLoading(true)
         return await Parse.User.logOut()
@@ -206,7 +203,6 @@ import axios from "axios"
                 return true
             }
 
-            
         })
         .catch((error)=>{
             Alert.alert('Error!',error.message)
@@ -215,6 +211,11 @@ import axios from "axios"
         .finally(() => setLoading(false))
     }
 
+    const EmptyFlatlist =()=>{
+        return(
+                <Text style={{marginTop:'30%', fontSize:20, color:'coral', marginLeft:'25%'}}>No Transactions</Text>
+        )
+    }
 
     //set greeting time
 
@@ -230,7 +231,6 @@ import axios from "axios"
           } else if (hours >= 12 && hours < 17) {
             timeofDay = 'Afternoon';
             AvatarShow= <Avatar.Image style={{backgroundColor:'orange'}} size={15} source={require('../../../assets/greetImage/morningSun.png')} />
-            
             
           } else {
             timeofDay='Evening'
@@ -280,7 +280,6 @@ import axios from "axios"
 
                 <View style={{backgroundColor:'#afeeee', height:260, borderBottomLeftRadius:40}}>
 
-
                     <View style={styles.greet}>
                         <View style={{flex:0.6,flexWrap:'wrap', marginLeft:15}}>
                             <Text style={{fontSize:18, color:'white'}}>Good {timeofDay} {AvatarShow} </Text>
@@ -295,17 +294,19 @@ import axios from "axios"
 
                     </View>
 
-                    <View style={{ bottom:'38%', left:'85%', width:'8%'}}>
-                    <TouchableOpacity  onPress={doUserLogOut}>
-                        <AntDesign name="logout" size={24} color="black" />
-                    </TouchableOpacity>
+                    <View style={{ bottom:'38%', left:'85%', width:'13%',height:'18%'}}>
+                        <TouchableOpacity  onPress={doUserLogOut}>
+                            <AntDesign name="logout" size={24} color="black" />
+                        </TouchableOpacity>
+
+                        <Text>Logout</Text>
                     </View>
             
                 </View>
             </View>
         
         <Card style={{shadowColor:'black',shadowOffset:{width:1, height:2},shadowOpacity:0.50,shadowRadius:5,elevation:10,backgroundColor:'#7b68ee', height:175, width:325, margin:18,marginTop:-200,justifyContent:'center', borderRadius:15,}}>
-            {balanceloading ? <ProgressBar indeterminate color='coral' /> : (
+            {balanceloading ? <ProgressBar indeterminate width={'94%'} left={'3%'} color='coral' /> : (
             <Card.Content>
             
                     <View style={{ height:'45%'}}>
@@ -344,12 +345,11 @@ import axios from "axios"
             </Card.Content>
             )}
         </Card>
-        
 
 
         <View style={{marginTop:10, flexDirection:'row',marginBottom:10, justifyContent:'space-between'}}>
-            <View style={{flex:0.5 }}>
-                <Text style={{fontSize:15, fontWeight:'bold', paddingLeft:'10%'}}>Transaction History</Text>
+            <View style={{flex:0.7 }}>
+                <Text style={{fontSize:15, fontWeight:'bold', paddingLeft:'10%'}}>Recent Transaction History</Text>
             </View>
 
             <View style={{flex:0.3,flexWrap:'wrap-reverse', marginRight:'5%'}}>
@@ -358,6 +358,8 @@ import axios from "axios"
                 </TouchableOpacity>
             </View>
         </View>
+
+        
         
 
         <FlatList
@@ -369,16 +371,19 @@ import axios from "axios"
         refreshing={refresh}
         onRefresh={onRefresh}
         keyExtractor={(item) => item.objectId}
+        ListEmptyComponent={EmptyFlatlist}
         data={mydata}
+        //data={mydata.slice(0,10)}
         renderItem={({item}) => (
             
             <TouchableOpacity
             onLongPress={()=>{deleteAlert(item.objectId)}}
+            onPress={()=>navigation.navigate('UpdateTransactionsView', {objectId:item.objectId, myUpdatedata:mydata})}
             >
             <View style={styles.items}>
                 <View style={{flex:0.13}}>
                     {
-                    item.category=="salary"?
+                        item.category=="salary"?
                     (
                         <Avatar.Image style={{ backgroundColor:'white'}} size={38}  source={require('../../../assets/pickerImage/selling.png')}/>
                     ) : item.category=="selling" ? (
@@ -470,9 +475,9 @@ import axios from "axios"
         
       </View>
 
+
     )
 }
-
 
 
 const styles=StyleSheet.create({
@@ -563,4 +568,4 @@ const styles=StyleSheet.create({
 })
 
 
-export default Screen1
+export default Statistics

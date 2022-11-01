@@ -8,6 +8,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { createStackNavigator } from "@react-navigation/stack";
 import Screen1 from "../views/nav/Screen1";
 import Screen2 from "../views/nav/Screen2";
+import UpdateTransactionsView from "../views/main/UpdateTransactionView";
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -24,6 +25,12 @@ function StackNavigator1() {
         <Stack.Screen
             name="Screen2"
             component={Screen2}
+            options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+            name="UpdateTransactionsView" 
+            component={UpdateTransactionsView} 
             options={{headerShown: false}}
         />
 

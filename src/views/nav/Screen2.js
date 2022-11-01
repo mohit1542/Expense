@@ -8,7 +8,7 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import Parse from "parse/react-native.js";
-
+import { StatusBar } from "expo-status-bar";
 
 
 const Screen2 = () => {
@@ -24,24 +24,7 @@ const Screen2 = () => {
     const [username, setUsername]= useState('')
 
 
-
-    //Checking empty textinput
-    const checkTextInput = () => {
-        //Check for the Title TextInput
-        if (!text.trim()) {
-          alert('Please Enter Title');
-          return;
-        }
-        if (!amount.trim()) {
-            alert('Please Enter Amount');
-            return;
-          }
-        //Checked Successfully
-        //Do whatever you want
-        alert('done! Your data is Added successfully');
-      };
-
-      //get current user
+    //get current user
     const getCurrentUser = async()=> {
         const currentUser = await Parse.User.currentAsync();
         if (currentUser !== null) {
@@ -53,19 +36,41 @@ const Screen2 = () => {
         getCurrentUser()
       },[username])
 
-    async function addExpense(){
-    try {
-      const ExpenseAdd =new Parse.Object('Expense');
-      ExpenseAdd.set('text', text);
-      ExpenseAdd.set('category', category);
-      ExpenseAdd.set('amount', amount);
-      ExpenseAdd.set('note', note);
-      ExpenseAdd.set('date', date);
-      ExpenseAdd.set('username', username);
-      await ExpenseAdd.save();
-    } catch (error) {
-      console.log('something wrong')
-    }
+
+
+    const addExpense= async() =>{
+
+        //Checking empty textinput
+        if (!text.trim()) {
+          alert('Please Enter Title');
+          return;
+        }
+        else if (!amount.trim()) {
+            alert('Please Enter Amount');
+            return;
+          }
+        else if (!category) {
+            alert('Please select category');
+            return;
+          }
+        else{
+            try {
+                const ExpenseAdd =new Parse.Object('Expense');
+                ExpenseAdd.set('text', text);
+                ExpenseAdd.set('category', category);
+                ExpenseAdd.set('amount', amount);
+                ExpenseAdd.set('note', note);
+                ExpenseAdd.set('date', date);
+                ExpenseAdd.set('username', username);
+                await ExpenseAdd.save();
+
+                //Checked Successfully
+                //Do whatever you want
+                alert('done! Your data is Added successfully');
+              } catch (error) {
+                console.log('something wrong')
+              }
+          }
     }
 
     // const onChange = (event, selectedDate) => {
@@ -111,25 +116,26 @@ const Screen2 = () => {
 
     return (
         <View style={{flex:1}}>
-            <View style={{flex:1,backgroundColor:'#ffa500', height:250, borderBottomRightRadius:50, borderBottomLeftRadius:50, alignItems:'center',justifyContent:'center'}}>
-                <View style={{flexDirection:'row-reverse',flexWrap:'wrap',justifyContent:'space-between',marginBottom:'35%'}}>
-                    <View style={{flex:0.9, marginLeft:100}}>
-                        <Text style={{fontSize:18, fontWeight:'bold'}}>Add Expense</Text>
+
+            <View style={{flex:0.1, flexDirection:'row',justifyContent:'center', alignItems:'flex-end'}}>
+                    
+                    <View style={{flex:0.08}}>
+                            <TouchableOpacity onPress={()=>navigation.navigate('Screen1')}>
+                                <Ionicons  name="arrow-back-sharp" size={24} color="black" />
+                            </TouchableOpacity>
                     </View>
 
-                    <View style={{flex:0.1,right:10}}>
-                        <TouchableOpacity onPress={()=>navigation.navigate('Screen1')}>
-                            <Ionicons  name="arrow-back-sharp" size={24} color="black" />
-                        </TouchableOpacity>
+
+                    <View style={{flex:0.7, alignItems:'center'}}>
+                            <Text style={{fontSize:18, fontWeight:'bold'}}>Add Expense</Text>
                     </View>
-                </View>
             </View>
       
 
-            <View style={{flex:2,alignItems:'center', marginTop:-150}}>
+            <View style={{flex:0.9,alignItems:'center'}}>
                 
-                <Card style={{height:500, width:'85%', backgroundColor:'white', borderRadius:15, borderWidth:2, borderColor:'grey', shadowColor:'grey', shadowOffset:{width:0, height:2}, shadowOpacity:0.75, shadowRadius:8, elevation:5}}>
-                    <View style={{alignItems:'center'}}>
+                <Card style={styles.card}>
+                    <View style={{alignItems:'center'}} >
                         <TextInput style={styles.text1}
                             label={'Title'}
                             value={text}
@@ -251,7 +257,6 @@ const Screen2 = () => {
                             title="Add"
                             value={button}
                             onPress= {()=>{
-                                checkTextInput();
                                 addExpense();
                             }} 
                         />
@@ -260,6 +265,8 @@ const Screen2 = () => {
             </View>
         
         </View>
+
+        
     )
 }
 
@@ -279,6 +286,20 @@ const styles=StyleSheet.create({
         backgroundColor:'white',
         marginLeft:15
     },
+    card:{
+        height:500, 
+        width:'85%', 
+        backgroundColor:'white', 
+        borderRadius:15, 
+        borderWidth:2, 
+        borderColor:'grey', 
+        shadowColor:'grey', 
+        shadowOffset:{width:0, height:2}, 
+        shadowOpacity:0.75, 
+        shadowRadius:8, 
+        elevation:5,
+        marginTop:'8%'
+    }
 })
 
 

@@ -15,7 +15,7 @@ const Screen2 = () => {
 
     const [text,setText]=useState('')
     const [category,setCategory]=useState('')
-    const [amount,setAmount]=useState('')
+    const [amount,setAmount]=useState()
     const [note,setNote]=useState('')
     const [date,setDate]=useState(new Date(1598051730000))
     const [pick, setPick]=useState('')
@@ -210,7 +210,7 @@ const Screen2 = () => {
                         <TextInput style={styles.text1}
                             label={'Amount'}
                             value={amount}
-                            onChangeText={text=>setAmount(text)}
+                            onChangeText={amount=>setAmount(amount)}
                             mode={"outlined"}
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}

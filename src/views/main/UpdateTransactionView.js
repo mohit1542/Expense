@@ -1,25 +1,12 @@
 import React, { useRef,useState, useEffect} from 'react'
 import { Text,
     View,
-    Image,
-    FlatList,
     StyleSheet, 
-    TouchableOpacity,
-    Button, StatusBar,
+    Button,
     ActivityIndicator,
     Alert,
-    RefreshControl,
-    BackHandler} from 'react-native'
-import AnimatedLottieView from 'lottie-react-native';
-import { StackActions, useIsFocused, useNavigation } from '@react-navigation/native';
+    ToastAndroid,} from 'react-native'
 import { Card,ProgressBar,Title,TextInput } from 'react-native-paper';
-import { Entypo } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Avatar,Modal, Portal, Provider } from 'react-native-paper';
-import { AntDesign } from '@expo/vector-icons';
-import Parse, { Query } from "parse/react-native.js";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios"
 import { Picker } from "@react-native-picker/picker";
 import Colors from '../../constants/Colors';
@@ -81,6 +68,13 @@ const UpdateTransactionsView = ({route})=> {
 
               setMydata(filteredJSON)
               //console.log(filteredJSON)
+
+                ToastAndroid.showWithGravity(
+                  "Your Expense is Updated!",
+                  ToastAndroid.SHORT,
+                  ToastAndroid.CENTER
+                );
+              
       })
         .catch((error)=>{
             alert('error', error)
@@ -190,7 +184,7 @@ const UpdateTransactionsView = ({route})=> {
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}
                             //left={<TextInput.Icon icon='currency-rupee'/>}
-                            right={<TextInput.Icon icon='backspace' onPress={() => setAmount("")}/>}
+                            right={<TextInput.Icon icon='backspace' onPress={() => setAmountUpdate("")}/>}
                             keyboardType={'numeric'}
                             maxLength={10}
                         />

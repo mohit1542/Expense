@@ -15,7 +15,6 @@ Parse.initialize('PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ','jtO82lSQGgeXVb3jX0g
 Parse.serverURL = 'https://parseapi.back4app.com/';
 
 
-
 export default function App() {
 
   const [isLogged, setIsLogged]=useState(null)

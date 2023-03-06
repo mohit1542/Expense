@@ -125,8 +125,8 @@ const Statistics =()=> {
               })
               
               if(filteredJSON != null){
-                filteredJSON.map(it=>{
-                  if(it.category=="interests"){
+                filteredJSON.filter(it=>{
+                  if(it.category=="allowance"){
                     setAllowance(Number(it.amount))
                   } else if(it.category=="comission"){
                     setCommission(Number(it.amount))
@@ -145,8 +145,8 @@ const Statistics =()=> {
                   }
                 })
               }
-              
        })
+       return true
       } catch (e) {
         Alert.alert("Error!", "Cannot load data! Please check your internet connection fetchIncomeDetails")
         return false
@@ -170,23 +170,55 @@ const Statistics =()=> {
             })
             .then((response) => {
 
-              let json= response.data.results
-              let filteredJSON= json.reverse().filter((val, i)=>{
+              const json= response.data.results
+              // const json2 =JSON.stringify(json);
+              // const json3 =JSON.parse(json2)
+              const filteredJSON= json.reverse().filter((val, i)=>{
               if(val.username == username){
               return val
               }
               })
+              //console.log(JSON.stringify(filteredJSON))
+              //console.log(json3)
+              // console.log(typeof(bills))
+
+           /*    function getKeyByValue(object, value) {
+                return Object.keys(object).find(key => object[key] === value);
+              }
+              const map = {"first" : "1", "second" : "2"};
+              console.log(getKeyByValue(map,"2"));
+          */
+
+              // const extract = (arr, prop)=>{
+              //     let extractedvalue= arr.map(item=> item[prop]);
+              //     return extractedvalue;
+              // }
+
+              // const result = extract(filteredJSON, "bills");
+              // console.log(result)
               
+
               if(filteredJSON != null){
-                filteredJSON.map(it=>{
-                  if(it.category=="bills"){
+                filteredJSON.filter(it=>{
+                  if(it.category =="bills"){
                     setBills(Number(it.amount))
-                  } else if(it.category=="clothing"){
+
+                    //console.log(it.amount)
+                    // const str=[];
+                    // for(let i=0; i<2; i++){
+                    //   str.push(Number(it.amount));
+                    // }
+                    // console.log(str);
+                    //console.log(str.length)
+
+                  }else if(it.category == "clothing"){ 
                     setClothing(Number(it.amount))
                   } else if(it.category == "entertainment"){
                     setEntertainment(Number(it.amount))
                   } else if(it.category == "food"){
                     setFood(Number(it.amount))
+                    //console.log((Number(it.amount).reduce((total, currentAmount)=> total= total + currentAmount.prix, 0)))
+                    //console.log(((it.amount/1)).reduce((prev, curr) => prev + curr,0))
                   } else if(it.category == "purchases"){
                     setPurchases(Number(it.amount))
                   } else if(it.category == "subscriptions"){
@@ -195,6 +227,7 @@ const Statistics =()=> {
                     setTransportation(Number(it.amount))
                   } else if(it.category == "misc-expense"){
                     setMiscExpense(Number(it.amount))
+                    //console.log(typeof(it.amount/1))
                   }
                 })
               }
@@ -221,6 +254,7 @@ const Statistics =()=> {
       isFocused && fetchIncomeAndExpense() 
           && fetchIncomeDetails() && fetchExpenseDetails()
     }, [isFocused])
+
 
     const totalData = [
       {
@@ -299,6 +333,7 @@ const Statistics =()=> {
           color: Colors.NIGHT_RED,
           legendFontSize: 14,
           legendFontColor: Colors.DARK_GRAY,
+          
       },
       {
           name: "Clothing",

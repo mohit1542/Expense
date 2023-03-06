@@ -4,6 +4,7 @@ import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import Parse from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 import LoginScreen from './LoginScreen';
 
 
@@ -19,11 +20,11 @@ const RegisterScreen= ()=>{
   const [name, setName]= useState('');
   const [password, setPassword]= useState('');
   const [imageURL, setImageUrl]= useState('');
+  const [selectedImage, setSelectedImage]=useState('')
 
   const navigation=useNavigation();
 
   const registerUser=async()=>{
-    // const Name=name;
     const Name=name;
     const Password=password;
 
@@ -49,6 +50,26 @@ const RegisterScreen= ()=>{
       ToastAndroid.CENTER
     );
   };
+
+
+  //Image picker from mobile
+  let openImagePickerAsync = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+    if (pickerResult.cancelled ==true) {
+      return;
+    }
+
+    setSelectedImage({localUri:pickerResult.uri});
+
+  }
 
 
   return (
@@ -78,6 +99,7 @@ const RegisterScreen= ()=>{
           onChangeText={text => setEmail(text)}
           value={email}
           maxLength={50}
+          autoCapitalize='none'
         />
       
         <Text style={{marginTop:15,fontWeight: 'bold'}}>Password</Text>
@@ -102,11 +124,13 @@ const RegisterScreen= ()=>{
           activeOutlineColor={'grey'}
           onChangeText={text => setImageUrl(text)}
           value={imageURL}
-          right={<TextInput.Icon icon='image'/>}
+          autoCapitalize='none'
+          right={<TextInput.Icon icon='image' onPress={()=>openImagePickerAsync()} />}
         />
+
       
         <View style={{ width: "70%", margin: 40, }}>
-          <Button title='Register' color={`#ff00ff`} onPress={()=>{registerUser();showToastWithGravity()}}/>
+          <Button title='Register' color={`#ff00ff`} onPress={()=>{registerUser();showToastWithGravity(), {selectedImage:selectedImage}}}/>
         </View>
 
         <TouchableOpacity onPress={()=>navigation.navigate('Login')}>

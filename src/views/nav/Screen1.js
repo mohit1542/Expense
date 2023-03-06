@@ -6,10 +6,7 @@ import { Text,
     StyleSheet, 
     TouchableOpacity,
     Button, StatusBar,
-    ActivityIndicator,
-    Alert,
-    RefreshControl,
-    BackHandler} from 'react-native'
+    Alert,} from 'react-native'
 import AnimatedLottieView from 'lottie-react-native';
 import { StackActions, useIsFocused, useNavigation } from '@react-navigation/native';
 import { Card,ProgressBar,Title } from 'react-native-paper';
@@ -23,8 +20,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios"
 
     
+    const Screen1 =({route})=>{
 
-    const Statistics =()=>{
+        //const {selectedImage} = route.params;
 
     const [mydata, setMydata]=useState([]);
     const [username, setUsername]=useState('')
@@ -149,7 +147,7 @@ import axios from "axios"
             [
                 {
                 text:'Cancel',
-                onPress:()=>console.log("Cancel"),
+                //onPress:()=>console.log("Cancel"),
                 style:'cancel',   // this is for ios
                 },
                 {
@@ -291,7 +289,6 @@ import axios from "axios"
                             <Ionicons name="notifications" size={28} color="blue" />
                         </TouchableOpacity>
                         </View>
-
                     </View>
 
                     <View style={{ bottom:'38%', left:'85%', width:'13%',height:'18%'}}>
@@ -568,4 +565,4 @@ const styles=StyleSheet.create({
 })
 
 
-export default Statistics
+export default Screen1

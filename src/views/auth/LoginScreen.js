@@ -127,6 +127,7 @@ export default function LoginScreen() {
         onChangeText={text => setEmail(text)}
         value={email}
         maxLength={50}
+        autoCapitalize='none'
         />
 
         <Text style={{marginTop:25,fontWeight: 'bold', fontSize:20}}>Password</Text>

@@ -1,6 +1,5 @@
 import "react-native-gesture-handler";
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationContainer} from '@react-navigation/native';
+import { StyleSheet, TouchableOpacity , StatusBar} from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons'; 
 import Statistics from "../views/nav/Statistics";
@@ -9,6 +8,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Screen1 from "../views/nav/Screen1";
 import Screen2 from "../views/nav/Screen2";
 import UpdateTransactionsView from "../views/main/UpdateTransactionView";
+
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator()

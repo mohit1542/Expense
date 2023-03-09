@@ -1,4 +1,4 @@
-import React, { useRef,useState, useEffect} from 'react'
+import React, { useRef,useState, useEffect, useMemo} from 'react'
 import { Text,
     View,
     Image,
@@ -15,113 +15,119 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Avatar,Modal, Portal, Provider } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
-import Parse, { Query } from "parse/react-native.js";
+import Parse, {Query} from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios"
 
     
-    const Screen1 =({route})=>{
+    const Screen1 =()=>{
 
-        //const {selectedImage} = route.params;
-
+    //const {selectedImage} = route.params;
+    const focussed =useIsFocused()  
     const [mydata, setMydata]=useState([]);
     const [username, setUsername]=useState('')
     const [Loading, setLoading]=useState(false);
     const [refresh, setRefresh] = useState(false)
     //const [transactions, setTransactions] = useState([])
-    const [balance, setBalance] = useState()
-    const [profit, setProfit] = useState()
-    const [expense, setExpense] = useState()
+    const [balance, setBalance] = useState(0)
+    const [profit, setProfit] = useState(0)
+    const [expense, setExpense] = useState(0)
     //const [personData, setPersonData]=useState([]);
     const [balanceloading, setBalanceLoading]=useState(false)
-    const focussed =useIsFocused()  
 
-
+    
     const fetchTransactions = async() => {
-        try {
             setBalanceLoading(true)
-            await axios ({
-               method:'GET',
-               url:`https://parseapi.back4app.com/classes/Expense`,
-               headers:{
-                'X-Parse-Application-Id' :'PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ',
-                'X-Parse-REST-API-Key': 'Z4eivtVtYlcvOKThJun2nX5fLrlwxJ0vtnNytExY',
-                'content-type': 'application/json'
-               }
-            })
-            .then((response)=>{
-                let json= response.data.results
-                //console.log(response.data.results[1].category)
-                //setMydata([...json.reverse()])
-                let filteredJSON= json.reverse().filter((val, i)=>{
-                    if(val.username == username){
-                    return val
-                    }
-                    })
-                    setMydata(filteredJSON)
-                    calculateBalance(filteredJSON)
-                    TotalPositive(filteredJSON)
-                    totalNegative(filteredJSON)
-                    // console.log(balance)
-                    // console.log(profit)
-                    // console.log(expense) 
-            })
-            .catch((error)=>{
-                alert('error', error)
-            })
-            return true
-        } catch (e) {
-            Alert.alert("Error!", "Cannot load transactions! Please check your internet connection")
-            return false
+            const currentUser = await Parse.User.currentAsync();
+            const usernamefetch = currentUser.getUsername();
+            
+            const ExpenseDataGet = Parse.Object.extend('Expense');
+            const query = new Parse.Query(ExpenseDataGet)
+            query.descending('updatedAt')  //sort-> latest to oldest 
+            //query.equalTo('username', 'Anubhav');
+            //console.log(usernamefetch)
+            query.contains('username', usernamefetch)
+            try {
+                
+                await query.find()
+                .then((results)=>{
+                    const data =results.map((result)=>({
+                        category: result.get('category'),
+                        date: result.get('date'),
+                        text: result.get('text'),
+                        numAmount:result.get('numAmount'),
+                        username: result.get('username'),
+                        objectId: result.get('objectid'),
+                        note: result.get('note'),
+                    }))
+                    setMydata(data)
+                    calculateBalance(data)
+                    TotalPositive(data)
+                    totalNegative(data)
+                    console.log(data)
+                    return true;
+                })
+                .catch((error)=>{
+                                alert('error', error)
+                            })
+                            return true
+                
+            } catch (e) {
+                Alert.alert("Error!", "Cannot load transactions! Please check your internet connection", e.message)
+                return false
+            }
+            finally{
+                setRefresh(false)
+                setBalanceLoading(false)
+            }
+            
         }
-        finally{
-            setRefresh(false)
-            setBalanceLoading(false)
-        }
-    }
+
+    useEffect(()=>{
+     focussed&& fetchTransactions();
+    },[focussed])
 
     const onRefresh=()=>{
         setRefresh(true);
         fetchTransactions();
     }
 
-    useEffect(()=>{
-        focussed && fetchTransactions();
-        //console.log(mydata);
-    },[focussed])
 
     const calculateBalance=(mydata)=>{
-        var balance=0
+        var balance=0;
         if(mydata !== null){
-            mydata.map(it=>{
+             mydata.map(it=>{
                 if( it.category=="allowance" || it.category=="comission"
                 || it.category=="gifts" || it.category=="interests"
                 || it.category=="investments" || it.category=="salary"
-                || it.category=="selling" || it.category=="misc-income"){
-                balance=balance + Number(it.amount)}
-
-                else{balance=balance - Number(it.amount)}
+                || it.category=="selling" || it.category=="misc-income")
+                {
+                balance=balance + (it.numAmount)
+                } else{balance=balance - (it.numAmount)}
                 //console.log(balance)
             })
             
-            setBalance(balance.toString())
+            setBalance(balance)
+            
+
         }
         return true
     }
 
 
     const TotalPositive=(mydata)=>{
-        var pos=0
+        var pos=0;
         if(mydata != null){
-            mydata.map(it=>{
+           mydata.map(it=>{
                 if(it.amount>=0 && it.category=="allowance" || it.category=="comission"
                 || it.category=="gifts" || it.category=="interests"
                 || it.category=="investments" || it.category=="salary"
                 || it.category=="selling" || it.category=="misc-income"){
-                    pos =pos+Number(it.amount);
+                    pos =pos+(it.numAmount);
+                    //console.log(pos)
                 }
             })
-            setProfit(pos.toString())
+            setProfit(pos)
         }
     }
 
@@ -133,15 +139,18 @@ import axios from "axios"
                 || it.category=="clothing" || it.category=="entertainment"
                 || it.category=="purchases" || it.category=="subscriptions" 
                 || it.category=="transportation" || it.category=="misc-expense") {
-                    neg = neg - Number(it.amount);
+                    //console.log(neg)
+                    neg = neg - (it.numAmount);
+                    //console.log(neg)
                 }
             })
-            setExpense(neg.toString())
+            setExpense(neg)
+            // console.log(expense)
         }
     }
 
-
-            
+    
+    
         const deleteAlert=(objectId)=>{
             Alert.alert("Are you sure", "Do you want to delete this transaction?",
             [
@@ -273,6 +282,7 @@ import axios from "axios"
     return (
         
         <View style={{flex:1, backgroundColor:'white'}}>
+            <StatusBar barStyle={'dark-content'} />
 
             <View style={{backgroundColor:'#f0e68c', height:380, borderBottomLeftRadius:40}}>
 
@@ -355,8 +365,6 @@ import axios from "axios"
                 </TouchableOpacity>
             </View>
         </View>
-
-        
         
 
         <FlatList
@@ -372,8 +380,7 @@ import axios from "axios"
         data={mydata}
         //data={mydata.slice(0,10)}
         renderItem={({item}) => (
-            
-            <TouchableOpacity
+             <TouchableOpacity
             onLongPress={()=>{deleteAlert(item.objectId)}}
             onPress={()=>navigation.navigate('UpdateTransactionsView', {objectId:item.objectId, myUpdatedata:mydata})}
             >
@@ -426,37 +433,37 @@ import axios from "axios"
                     {
                     item.category=="salary"?
                     (
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ) : item.category=="selling" ? (
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="allowance"?(
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="comission"?(
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="gifts"?(
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="interests"?(
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="investments"?(
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="misc-income"?(
-                        <Text style={styles.flatText2}> +{item.amount} </Text>
+                        <Text style={styles.flatText2}> +{item.numAmount} </Text>
                     ): item.category=="bills"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="clothing"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="entertainment"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="food"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="purchases"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="subscriptions"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="transportation"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ): item.category=="misc-expense"?(
-                        <Text style={styles.flatText3}> -{item.amount} </Text>
+                        <Text style={styles.flatText3}> -{item.numAmount} </Text>
                     ):null}
                     
                 </View>

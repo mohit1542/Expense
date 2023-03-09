@@ -15,7 +15,7 @@ const Screen2 = () => {
 
     const [text,setText]=useState('')
     const [category,setCategory]=useState('')
-    const [amount,setAmount]=useState()
+    const [amount,setAmount]=useState('')
     const [note,setNote]=useState('')
     const [date,setDate]=useState(new Date(1598051730000))
     const [pick, setPick]=useState('')
@@ -37,31 +37,32 @@ const Screen2 = () => {
       },[username])
 
 
-
     const addExpense= async() =>{
-
         //Checking empty textinput
         if (!text.trim()) {
           alert('Please Enter Title');
           return;
-        }
-        else if (!amount.trim()) {
-            alert('Please Enter Amount');
-            return;
-          }
-        else if (!category) {
+        }else if (!category) {
             alert('Please select category');
             return;
           }
         else{
             try {
+                //generate random id
+                let s4 = () => {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+                  }
+
                 const ExpenseAdd =new Parse.Object('Expense');
                 ExpenseAdd.set('text', text);
                 ExpenseAdd.set('category', category);
-                ExpenseAdd.set('amount', amount);
+                ExpenseAdd.set('numAmount', Number(amount));
                 ExpenseAdd.set('note', note);
                 ExpenseAdd.set('date', date);
                 ExpenseAdd.set('username', username);
+                ExpenseAdd.set('objectid', username+text+s4())
                 await ExpenseAdd.save();
 
                 //Checked Successfully
@@ -210,12 +211,12 @@ const Screen2 = () => {
                         <TextInput style={styles.text1}
                             label={'Amount'}
                             value={amount}
-                            onChangeText={amount=>setAmount(amount)}
+                            onChangeText={text=>setAmount(text)}
                             mode={"outlined"}
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}
                             left={<TextInput.Icon icon='currency-rupee'/>}
-                            right={<TextInput.Icon icon='backspace' onPress={() => setAmount("")}/>}
+                            right={<TextInput.Icon icon='backspace' onPress={() => setAmount('')}/>}
                             keyboardType={'numeric'}
                             maxLength={10}
                         />

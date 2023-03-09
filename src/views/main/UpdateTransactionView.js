@@ -51,7 +51,7 @@ const UpdateTransactionsView = ({route})=> {
             'content-type': 'application/json'
            },
            data:{
-            amount:amountUpdate,
+            numAmount:amountUpdate,
             text:textUpdate,
             date:dateUpdate,
             note:noteUpdate,

@@ -10,28 +10,30 @@ import { Card,ProgressBar,Title,TextInput } from 'react-native-paper';
 import axios from "axios"
 import { Picker } from "@react-native-picker/picker";
 import Colors from '../../constants/Colors';
+import Parse, {Query} from "parse/react-native.js";
 
 const UpdateTransactionsView = ({route})=> {
 
-  const {objectId, myUpdatedata} = route.params;
+  const {objectid, myUpdatedata} = route.params;
 
     const [textUpdate,setTextUpdate]=useState('')
     const [categoryUpdate,setCategoryUpdate]=useState('')
-    const [amountUpdate,setAmountUpdate]=useState('')
+    //const [amountUpdate,setAmountUpdate]=useState('')
+    const [numAmountUpdate,setnumAmountUpdate]=useState()
     const [noteUpdate,setNoteUpdate]=useState('')
     const [dateUpdate,setDateUpdate]=useState(new Date(1598051730000))
     const [button, SetButton]=useState('')
-    const [mydata, setMydata]=useState([]);
+    const [mydata, setMydata]=useState('');
     const [pick, setPick]=useState('')
 
 
-  const UpadateTransaction =async(objectId)=>{
+  const UpadateTransaction =async(objectid)=>{
 
     if (textUpdate.trim()=="") {
           alert('Please Enter Title');
           return
     }
-    else if (amountUpdate.trim()=="") {
+    else if (numAmountUpdate.trim()=="") {
           alert('Please Enter Amount');
           return;
     }
@@ -40,46 +42,30 @@ const UpdateTransactionsView = ({route})=> {
           return;
     }
     else{
+        const ExpenseDataGet = Parse.Object.extend('Expense');
+        const query = new Parse.Query(ExpenseDataGet)
+        query.equalTo('objectid', objectid);
         try {
-        //console.log(objectId)
-        await axios ({
-           method:'PUT',
-           url:`https://parseapi.back4app.com/classes/Expense/${objectId}`,
-           headers:{
-            'X-Parse-Application-Id' :'PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ',
-            'X-Parse-REST-API-Key': 'Z4eivtVtYlcvOKThJun2nX5fLrlwxJ0vtnNytExY',
-            'content-type': 'application/json'
-           },
-           data:{
-            numAmount:amountUpdate,
-            text:textUpdate,
-            date:dateUpdate,
-            note:noteUpdate,
-            category:categoryUpdate
-           }
-        })
-        .then(()=>{
-          //below things is not neccessory to write
-          let filteredJSON=myUpdatedata.filter((val, i)=>{
-              if(val.objectId ==objectId){
-              return val
-              }
-              })
-
-              setMydata(filteredJSON)
-              //console.log(filteredJSON)
-
-                ToastAndroid.showWithGravity(
-                  "Your Expense is Updated!",
-                  ToastAndroid.SHORT,
-                  ToastAndroid.CENTER
-                );
+        //console.log(objectid)
+        query.first().then((result)=>{
+          if(result){
+            result.set('category', categoryUpdate)
+            result.set('note', noteUpdate)
+            result.set('numAmount', Number(numAmountUpdate))
+            result.set('text', textUpdate)
+            result.set('date', dateUpdate)
+            result.save().then(()=>{
               
-      })
-        .catch((error)=>{
-            alert('error', error)
+              ToastAndroid.showWithGravity(
+                "Your Expense is Updated!",
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+              );
+                //console.log("updated", updateData)
+            })
+          }
         })
-        return true
+
     } catch (e) {
         Alert.alert("Error!", "Cannot Update transactions! Please check your internet connection")
         return false
@@ -178,13 +164,13 @@ const UpdateTransactionsView = ({route})=> {
 
                         <TextInput style={styles.text1}
                             label={'Amount*'}
-                            value={amountUpdate}
-                            onChangeText={textUpdate=>setAmountUpdate(textUpdate)}
+                            value={numAmountUpdate}
+                            onChangeText={textUpdate=>setnumAmountUpdate(textUpdate)}
                             mode={'flat'}
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}
                             //left={<TextInput.Icon icon='currency-rupee'/>}
-                            right={<TextInput.Icon icon='backspace' onPress={() => setAmountUpdate("")}/>}
+                            right={<TextInput.Icon icon='backspace' onPress={() => setnumAmountUpdate("")}/>}
                             keyboardType={'numeric'}
                             maxLength={10}
                         />
@@ -214,7 +200,7 @@ const UpdateTransactionsView = ({route})=> {
                         />
 
                 <Button 
-                 onPress={()=>UpadateTransaction(objectId)}
+                 onPress={()=>UpadateTransaction(objectid)}
                   title='Update'
                   value={button}
                   color={'orange'}/>

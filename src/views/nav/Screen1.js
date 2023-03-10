@@ -57,14 +57,14 @@ import axios from "axios"
                         text: result.get('text'),
                         numAmount:result.get('numAmount'),
                         username: result.get('username'),
-                        objectId: result.get('objectid'),
+                        objectid: result.get('objectid'),
                         note: result.get('note'),
                     }))
                     setMydata(data)
                     calculateBalance(data)
                     TotalPositive(data)
                     totalNegative(data)
-                    console.log(data)
+                    //console.log(data)
                     return true;
                 })
                 .catch((error)=>{
@@ -151,45 +151,59 @@ import axios from "axios"
 
     
     
-        const deleteAlert=(objectId)=>{
-            Alert.alert("Are you sure", "Do you want to delete this transaction?",
-            [
-                {
-                text:'Cancel',
-                //onPress:()=>console.log("Cancel"),
-                style:'cancel',   // this is for ios
-                },
-                {
-                text:'Yes',
-                onPress:async() => 
-                        {
-                            //deleteTransaction
-                            //console.log(objectId)
-                            await axios({
-                                method:'DELETE',
-                                url:`https://parseapi.back4app.com/classes/Expense/${objectId}`,
-                                headers:{
-                                    'X-Parse-Application-Id' :'PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ',
-                                    'X-Parse-REST-API-Key': 'Z4eivtVtYlcvOKThJun2nX5fLrlwxJ0vtnNytExY',
-                                    'content-type': 'application/json'
-                                   }
-                            })
-                            .then(()=>{
-                                //below things is not neccessory to write
+    const deleteAlert=(objectid)=>{
+        Alert.alert("Are you sure", "Do you want to delete this transaction?",
+        [
+            {
+            text:'Cancel',
+            //onPress:()=>console.log("Cancel"),
+            style:'cancel',   // this is for ios
+            },
+            {
+            text:'Yes',
+            onPress:async() => 
+                    {
+                        //deleteTransaction
+                       // console.log(objectid)
+                        //console.log(mydata)
+                        const query = new Parse.Query('Expense');
+                        query.equalTo('objectid',objectid)
+
+                        try {
+                            // here you put the objectId that you want to delete
+
+                           // const object = await query.get('AnubhavBjt86ab');
+                            try {
+                             await query.find().then((results)=> {
+
+                            return Parse.Object.destroyAll(results);
+                            }).then(()=>{
+                    
                                 let filteredJSON=mydata.filter((val, i)=>{
-                                    if(val.objectId !==objectId){
+                                    if(val.objectid !== objectid){
                                     return val
                                     }
                                     })
                                     //console.log(filteredJSON)
                                     setMydata(filteredJSON)
-                            })
+        
+                             })
                             
+                            
+                            } catch (error) {
+                            console.error('Error while deleting ParseObject', error);
+                            }
+                        } catch (error) {
+                            console.error('Error while retrieving ParseObject', error);
                         }
-                }
-            ]
-            )
-    }
+                        
+                    }
+            }
+        ]
+        )
+}
+
+
 
 
     const doUserLogOut = async () => {
@@ -375,14 +389,14 @@ import axios from "axios"
         ItemSeparatorComponent={itemseparate}
         refreshing={refresh}
         onRefresh={onRefresh}
-        keyExtractor={(item) => item.objectId}
+        keyExtractor={(item) => item.objectid}
         ListEmptyComponent={EmptyFlatlist}
         data={mydata}
         //data={mydata.slice(0,10)}
         renderItem={({item}) => (
              <TouchableOpacity
-            onLongPress={()=>{deleteAlert(item.objectId)}}
-            onPress={()=>navigation.navigate('UpdateTransactionsView', {objectId:item.objectId, myUpdatedata:mydata})}
+            onLongPress={()=>{deleteAlert(item.objectid)}}
+            onPress={()=>navigation.navigate('UpdateTransactionsView', {objectid:item.objectid, myUpdatedata:mydata})}
             >
             <View style={styles.items}>
                 <View style={{flex:0.13}}>

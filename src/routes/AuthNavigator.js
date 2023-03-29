@@ -1,6 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { Component } from 'react'
-import { Text, View, StatusBar } from 'react-native'
 import LoginScreen from '../views/auth/LoginScreen'
 import RegisterScreen from '../views/auth/RegisterScreen'
 import MainNavigator from '../routes/MainNavigator'

@@ -1,47 +1,31 @@
-import React, { useState } from 'react'
-import { Text, View,Button, Alert,ToastAndroid, TouchableOpacity } from 'react-native'
-import { TextInput } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import {
+  Text,
+  View,
+  Button,
+  Alert,
+  ToastAndroid,
+  TouchableOpacity,
+} from "react-native";
+import { TextInput } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 import Parse from "parse/react-native.js";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';
-import LoginScreen from './LoginScreen';
-
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 
 Parse.setAsyncStorage(AsyncStorage);
-Parse.initialize('PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ','jtO82lSQGgeXVb3jX0gKm7SMHIwY2booxogq7RbT');
-Parse.serverURL = 'https://parseapi.back4app.com/';
+Parse.initialize(
+  "PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ",
+  "jtO82lSQGgeXVb3jX0gKm7SMHIwY2booxogq7RbT"
+);
+Parse.serverURL = "https://parseapi.back4app.com/";
 
+const RegisterScreen = () => {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
 
-const RegisterScreen= ()=>{
-
-  const [email, setEmail]= useState('');
-  const [name, setName]= useState('');
-  const [password, setPassword]= useState('');
-  const [imageURL, setImageUrl]= useState('');
-  const [selectedImage, setSelectedImage]=useState('')
-
-  const navigation=useNavigation();
-
-  const registerUser=async()=>{
-    const Name=name;
-    const Password=password;
-
-    return await Parse.User.signUp(Name,Password,{email:email, imageURL:imageURL})
-      .then((createdUser)=>{
-        console.log('registered',
-          //`User ${createdUser.getUsername()} was successfully created!`,
-          navigation.navigate('MainNavigator')
-        );
-        return true;
-      })
-      .catch((error)=>{
-        Alert.alert('Error', error.message);
-        return false
-      })
-  }
-
+  const navigation = useNavigation();
 
   const showToastWithGravity = () => {
     ToastAndroid.showWithGravity(
@@ -51,96 +35,121 @@ const RegisterScreen= ()=>{
     );
   };
 
+  const registerUser = async () => {
+    const Name = name;
+    const Password = password;
 
-  //Image picker from mobile
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    return await Parse.User.signUp(Name, Password, { email: email })
+      .then((createdUser) => {
+        console.log(
+          "registered",
+          //`User ${createdUser.getUsername()} was successfully created!`,
+          navigation.navigate("MainNavigator")
+        );
 
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
-
-    if (pickerResult.cancelled ==true) {
-      return;
-    }
-
-    setSelectedImage({localUri:pickerResult.uri});
-
-  }
-
+        showToastWithGravity();
+        return true;
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message);
+        return false;
+      });
+  };
 
   return (
-    <View style={{flex:1,backgroundColor:"#fff",justifyContent:'center'}}>
-    <View style ={{flex:0.9,alignItems:'center',backgroundColor:"#fff",justifyContent:'center', paddingTop:'30%'}}>
-        <Text style={{marginTop:15,fontWeight: 'bold'}}>Name</Text>
-        <TextInput 
-          style={{marginTop:5,width:'90%',paddingHorizontal:8,paddingBottom:8,backgroundColor:'white'}} 
-          label={'Name'}
-          mode={'outlined'}
-          selectionColor={'skyblue'}
-          activeOutlineColor={'grey'}
-          onChangeText={text => setName(text)}
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          backgroundColor: "#fff",
+        }}
+      >
+        <Text style={{ marginTop: '35%', fontWeight: "bold" }}>Name</Text>
+        <TextInput
+          style={{
+            marginTop: 5,
+            width: "90%",
+            paddingHorizontal: 8,
+            paddingBottom: 8,
+            backgroundColor: "white",
+          }}
+          label={"Name"}
+          mode={"outlined"}
+          selectionColor={"skyblue"}
+          activeOutlineColor={"grey"}
+          onChangeText={(text) => setName(text)}
           value={name}
           maxLength={50}
         />
 
-        <Text style={{fontWeight: 'bold',marginTop:15}}>Email</Text>
-        <TextInput 
-          style={{marginTop:5,width:'90%',paddingHorizontal:8,paddingBottom:8,backgroundColor:'white',}} 
-          label={'Email'}
-          mode={'outlined'}
-          selectionColor={'skyblue'}
-          activeOutlineColor={'grey'}
-          keyboardType={'email-address'}
-          right={<TextInput.Icon icon='email'/>}
-          onChangeText={text => setEmail(text)}
+        <Text style={{ fontWeight: "bold", marginTop: 15 }}>Email</Text>
+        <TextInput
+          style={{
+            marginTop: 5,
+            width: "90%",
+            paddingHorizontal: 8,
+            paddingBottom: 8,
+            backgroundColor: "white",
+          }}
+          label={"Email"}
+          mode={"outlined"}
+          selectionColor={"skyblue"}
+          activeOutlineColor={"grey"}
+          keyboardType={"email-address"}
+          right={<TextInput.Icon icon="email" />}
+          onChangeText={(text) => setEmail(text)}
           value={email}
           maxLength={50}
-          autoCapitalize='none'
+          autoCapitalize="none"
         />
-      
-        <Text style={{marginTop:15,fontWeight: 'bold'}}>Password</Text>
-        <TextInput 
-          style={{marginTop:5,width:'90%',paddingHorizontal:8,paddingBottom:8,backgroundColor:'white'}} 
-          label={'Password'}
-          mode={'outlined'}
-          selectionColor={'skyblue'}
-          activeOutlineColor={'grey'}
-          onChangeText={text => setPassword(text)}
+
+        <Text style={{ marginTop: 15, fontWeight: "bold" }}>Password</Text>
+        <TextInput
+          style={{
+            marginTop: 5,
+            width: "90%",
+            paddingHorizontal: 8,
+            paddingBottom: 8,
+            backgroundColor: "white",
+          }}
+          label={"Password"}
+          mode={"outlined"}
+          selectionColor={"skyblue"}
+          activeOutlineColor={"grey"}
+          onChangeText={(text) => setPassword(text)}
           value={password}
           secureTextEntry
           maxLength={50}
         />
-      
-        <Text style={{marginTop:15,fontWeight: 'bold'}}>Profile Picture</Text>
-        <TextInput 
-          style={{marginTop:5,width:'90%',paddingHorizontal:8,paddingBottom:8,backgroundColor:'white'}} 
-          label={'Image URL'}
-          mode={'outlined'}
-          selectionColor={'skyblue'}
-          activeOutlineColor={'grey'}
-          onChangeText={text => setImageUrl(text)}
-          value={imageURL}
-          autoCapitalize='none'
-          right={<TextInput.Icon icon='image' onPress={()=>openImagePickerAsync()} />}
-        />
 
-      
-        <View style={{ width: "70%", margin: 40, }}>
-          <Button title='Register' color={`#ff00ff`} onPress={()=>{registerUser();showToastWithGravity(), {selectedImage:selectedImage}}}/>
-        </View>
-
-        <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
-          <Text style={{fontSize:18}}>Go to Login Page</Text>
+        <TouchableOpacity
+          onPress={() => {
+            registerUser();
+          }}
+          style={{ marginBottom: 20, marginTop: 10 }}
+        >
+          <LinearGradient
+            colors={["#08d4c4", "#01ab9d"]}
+            style={{
+              width: 200,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 50,
+              flexDirection: "row",
+              marginTop: "2%",
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>Register</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
-    </View>
-    </View>
-  )
-}
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={{ fontSize: 18 }}>Go to Login Page</Text>
+        </TouchableOpacity>
 
+      </View>
+  );
+};
 
-export default RegisterScreen
+export default RegisterScreen;

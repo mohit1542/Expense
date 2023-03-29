@@ -4,7 +4,6 @@ import { Text, View } from 'react-native'
 import BottomNavigator from './BottomNavigator'
 import AuthNavigator from './AuthNavigator'
 
-
 const Stack= createStackNavigator()
 
 function MainNavigator() {

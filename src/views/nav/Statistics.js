@@ -9,14 +9,13 @@ import {
   RefreshControl,
   Switch,
 } from "react-native";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PieChart } from "react-native-chart-kit";
 import Colors from "../../constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
 import { ProgressBar } from "react-native-paper";
 import { VictoryPie } from "victory-native";
 import Parse, { Query } from "parse/react-native.js";
+
 
 const Statistics = () => {
   const isFocused = useIsFocused();
@@ -38,31 +37,43 @@ const Statistics = () => {
   const [miscExpense, setMiscExpense] = useState(null);
   const [isEnabled, setIsEnabled] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [profit, setProfit] = useState(null);
   const [expense, setExpense] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   //const [mydata, setMydata] = useState([])
 
-  const fetchIncomeAndExpense = async () => {
+
+  const fetchIncomeAndExpense = async() => {
+    setLoading(true)
+    const currentUser = await Parse.User.currentAsync();
+    const usernamefetch = currentUser.getUsername();
+    
+    const ExpenseDataGet = Parse.Object.extend('Expense');
+    const query = new Parse.Query(ExpenseDataGet)
+    query.descending('updatedAt')  //sort-> latest to oldest 
+    //query.equalTo('username', 'Anubhav');
+    //console.log(usernamefetch)
+    query.contains('username', usernamefetch)
     try {
-      setLoading(true);
-      await axios({
-        method: "GET",
-        url: `https://parseapi.back4app.com/classes/Expense`,
-        headers: {
-          "X-Parse-Application-Id": "PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ",
-          "X-Parse-REST-API-Key": "Z4eivtVtYlcvOKThJun2nX5fLrlwxJ0vtnNytExY",
-          "content-type": "application/json",
-        },
-      }).then((response) => {
-        let json = response.data.results;
-        let filteredJSON = json.reverse().filter((val, i) => {
-          if (val.username == username) {
-            return val;
-          }
-        });
-        //setMydata(filteredJSON)
+        
+        await query.find()
+        .then((results)=>{
+            const filteredJSON =results.map((result)=>({
+                category: result.get('category'),
+                date: result.get('date'),
+                text: result.get('text'),
+                numAmount:result.get('numAmount'),
+                username: result.get('username'),
+                objectid: result.get('objectid'),
+                note: result.get('note'),
+                createdAt: result.get('createdAt'),
+               updatedAt: result.get('updatedAt')
+            }))
+            
+
+       //setMydata(filteredJSON)
         TotalPositive(filteredJSON);
         totalNegative(filteredJSON);
 
@@ -85,16 +96,20 @@ const Statistics = () => {
         salaryBalance(filteredJSON);
         sellingBalance(filteredJSON);
         miscincomeBalance(filteredJSON);
-      });
-      return true;
+        })
+       
+        return true
     } catch (error) {
-      Alert.alert("Error!", "Cannot load data");
+        Alert.alert("Error!", "Cannot load data");
       return false;
-    } finally {
-      setLoading(false);
-      setRefresh(false);
     }
-  };
+    finally{
+        setRefresh(false)
+        setLoading(false)
+    }
+    
+}
+
 
   const TotalPositive = (mydata) => {
     var pos = 0;
@@ -339,7 +354,7 @@ const Statistics = () => {
 
   useEffect(() => {
     isFocused && fetchIncomeAndExpense();
-  }, []);
+  }, [isFocused]);
 
   const totalData = [
     {
@@ -500,9 +515,8 @@ const Statistics = () => {
         </Text>
       </View>
 
-      {loading ? (
-        <ProgressBar indeterminate color={"coral"} />
-      ) : (
+      {loading ? 
+        <ProgressBar indeterminate color={"coral"} /> : (
         <ScrollView
           style={{ flex: 0.925 }}
           refreshControl={

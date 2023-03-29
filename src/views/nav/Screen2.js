@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Button,KeyboardAvoidingView, Platform, TouchableWithoutFeedback , ScrollView, Keyboard, Alert} from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView} from "react-native";
 import { Card,TextInput ,List, Avatar} from "react-native-paper";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { Picker } from "@react-native-picker/picker";
-import { MaterialIcons } from '@expo/vector-icons';
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 import Parse from "parse/react-native.js";
-import { StatusBar } from "expo-status-bar";
 
 
 const Screen2 = () => {
@@ -116,27 +113,11 @@ const Screen2 = () => {
 
 
     return (
+        
         <View style={{flex:1}}>
-
-            <View style={{flex:0.1, flexDirection:'row',justifyContent:'center', alignItems:'flex-end'}}>
-                    
-                    <View style={{flex:0.08}}>
-                            <TouchableOpacity onPress={()=>navigation.navigate('Screen1')}>
-                                <Ionicons  name="arrow-back-sharp" size={24} color="black" />
-                            </TouchableOpacity>
-                    </View>
-
-
-                    <View style={{flex:0.7, alignItems:'center'}}>
-                            <Text style={{fontSize:18, fontWeight:'bold'}}>Add Expense</Text>
-                    </View>
-            </View>
-      
-
-            <View style={{flex:0.9,alignItems:'center'}}>
-                
-                <Card style={styles.card}>
-                    <View style={{alignItems:'center'}} >
+             {/* <StatusBar backgroundColor={'#009387'} barStyle='default' /> */}
+             <ScrollView>
+                <View style={styles.card}>
                         <TextInput style={styles.text1}
                             label={'Title'}
                             value={text}
@@ -151,7 +132,7 @@ const Screen2 = () => {
                             
                         />
 
-                        <View style={{width:'90%', borderWidth:1, marginTop:20, borderColor:'grey'}}>
+                        <View style={{width:'90%', borderWidth:1, marginTop:8, borderColor:'grey'}}>
                             <Picker style={styles.picker1}
                                 mode={'dropdown'}
                                 selectedValue={pick}
@@ -212,16 +193,14 @@ const Screen2 = () => {
                             label={'Amount'}
                             value={amount}
                             onChangeText={text=>setAmount(text)}
-                            mode={"outlined"}
+                            mode={'outlined'}
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}
                             left={<TextInput.Icon icon='currency-rupee'/>}
-                            right={<TextInput.Icon icon='backspace' onPress={() => setAmount('')}/>}
+                            right={<TextInput.Icon icon='backspace' onPress={() => setAmount('') }/>}
                             keyboardType={'numeric'}
                             maxLength={10}
                         />
-                        
-                    
 
                         <TextInput style={styles.text1}
                             label={'Date'}
@@ -231,8 +210,7 @@ const Screen2 = () => {
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}
                             keyboardType={'numeric'}
-                            right={<TextInput.Icon icon='calendar' onPress={getCurrentDate}/>}
-                            //editable={false}
+                            right={<TextInput.Icon icon='calendar' onPress={getCurrentDate} />}
                         />
 
                         <TextInput style={styles.text1}
@@ -247,25 +225,23 @@ const Screen2 = () => {
                             maxLength={80}
                         />
 
-                    </View>
                 
-                </Card>
-                
+               
+                <TouchableOpacity onPress={()=>{addExpense()}} style={{marginBottom:20, marginTop:10}}>
+                    <LinearGradient
+                        colors={['#08d4c4', '#01ab9d']}
+                        style={styles.signIn}
+                    >
+                        <Text style={styles.textSign}>Click to Add</Text>
 
-    
-                    <View style={{width:'50%',marginTop:15}}>
-                        <Button
-                            title="Add"
-                            value={button}
-                            onPress= {()=>{
-                                addExpense();
-                            }} 
-                        />
-                    </View>
+                    </LinearGradient>
+                </TouchableOpacity>
 
-            </View>
+                </View>
+                </ScrollView>
         
         </View>
+       
 
         
     )
@@ -274,33 +250,39 @@ const Screen2 = () => {
 
 
 const styles=StyleSheet.create({
+    card:{
+        alignItems:'center', 
+        marginTop:'5%', 
+        borderWidth:1, 
+        borderRadius:10, 
+        margin:10,
+    },
     text1:{
-        marginTop:20,
+        marginTop:8,
         width:'90%',
         paddingHorizontal:8,
         paddingBottom:8,
         backgroundColor:'white',
     },
     picker1:{
-        width:'90%',
-        borderWidth:2,
         backgroundColor:'white',
-        marginLeft:15
     },
-    card:{
-        height:500, 
-        width:'85%', 
-        backgroundColor:'white', 
-        borderRadius:15, 
-        borderWidth:2, 
-        borderColor:'grey', 
-        shadowColor:'grey', 
-        shadowOffset:{width:0, height:2}, 
-        shadowOpacity:0.75, 
-        shadowRadius:8, 
-        elevation:5,
-        marginTop:'8%'
-    }
+    signIn:{
+        width:150,
+        height:40,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:50,
+        flexDirection:'row',
+        marginTop:'4%'
+    },
+    textSign:{
+        color: 'white',
+        fontWeight:'bold'
+    },
+    pickerItem: {
+        backgroundColor: Colors.DARK, 
+    },
 })
 
 

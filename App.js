@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import "react-native-gesture-handler";
-import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationContainer, StackActions, useNavigation} from '@react-navigation/native';
-import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer} from '@react-navigation/native';
 import AuthNavigator from "./src/routes/AuthNavigator";
 import MainNavigator from "./src/routes/MainNavigator";
 import Parse from "parse/react-native.js";

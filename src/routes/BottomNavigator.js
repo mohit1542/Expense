@@ -1,5 +1,4 @@
 import "react-native-gesture-handler";
-import { StyleSheet, TouchableOpacity , StatusBar} from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons'; 
 import Statistics from "../views/nav/Statistics";
@@ -8,7 +7,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Screen1 from "../views/nav/Screen1";
 import Screen2 from "../views/nav/Screen2";
 import UpdateTransactionsView from "../views/main/UpdateTransactionView";
-
+import ProfileScreen from "../views/nav/Profile";
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -19,13 +18,13 @@ function StackNavigator1() {
         <Stack.Screen
             name="Screen1"
             component={Screen1}
-            options={{headerShown: false}}
+            options={{headerShown:false}}
         />
 
         <Stack.Screen
             name="Screen2"
             component={Screen2}
-            options={{headerShown: false}}
+            options={{headerTitleAlign:'center', headerTitle:'Add Expense', backgroundColor:'red'}}
         />
 
         <Stack.Screen
@@ -37,29 +36,6 @@ function StackNavigator1() {
     </Stack.Navigator>
   )
 }
-
-
-// Stacknavigator2's views not added yet
-
-// function StackNavigator2(){
-//   return(
-//     <Stack.Navigator initialRouteName="TransactionView">
-//         <Stack.Screen
-//             name="TransactionsView" 
-//             component={TransactionsView} 
-//             options={{headerShown: false}}
-//         />
-
-//         <Stack.Screen
-//             name="UpdateTransactionsView" 
-//             component={UpdateTransactionsView} 
-//             options={{headerShown: false}}
-//         />
-
-//     </Stack.Navigator>
-//   )
-// }
-
 
 
 function BottomNavigator() {
@@ -89,6 +65,16 @@ function BottomNavigator() {
             options={{
               tabBarIcon:({color})=>(
               <Ionicons name="stats-chart-sharp" size={24} color={color} />
+              )
+          }}
+        />
+
+         <Tab.Screen 
+            name="Profile" 
+            component ={ProfileScreen} 
+            options={{
+              tabBarIcon:({color})=>(
+              <Ionicons  name="person-circle-outline" size={24} color={color} />
               )
           }}
         />

@@ -3,11 +3,9 @@ import { Text,
     View,
     StyleSheet, 
     Button,
-    ActivityIndicator,
     Alert,
     ToastAndroid,} from 'react-native'
-import { Card,ProgressBar,Title,TextInput } from 'react-native-paper';
-import axios from "axios"
+import { TextInput } from 'react-native-paper';
 import { Picker } from "@react-native-picker/picker";
 import Colors from '../../constants/Colors';
 import Parse, {Query} from "parse/react-native.js";
@@ -100,13 +98,10 @@ const UpdateTransactionsView = ({route})=> {
                             mode={'flat'}
                             selectionColor={'skyblue'}
                             activeOutlineColor={'grey'}
-                            //placeholder="label"
-                            //placeholderTextColor={'red'}
-                            //activeUnderlineColor={'red'}
                             maxLength={50}
                         />
 
-                          <View style={{ borderWidth:1, borderColor:'grey', backgroundColor:'white'}}>
+                          <View style={{borderTopWidth:0, borderWidth:1, borderColor:'grey', backgroundColor:'white'}}>
                             <Picker style={styles.picker1}
                                 mode={'dropdown'}
                                 selectedValue={pick}
@@ -127,7 +122,7 @@ const UpdateTransactionsView = ({route})=> {
                                 selectedValue={categoryUpdate}
                                 onValueChange={(val) => setCategoryUpdate(val)}
                             >
-                                <Picker.Item label="Select Income Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
+                                <Picker.Item label="Select Income Category" value="category"/>
                                 <Picker.Item label="Allowance" value="allowance" style={styles.pickerItem}/>
                                 <Picker.Item label="Commission" value="comission" style={styles.pickerItem}/>
                                 <Picker.Item label="Gifts" value="gifts" style={styles.pickerItem}/>
@@ -147,7 +142,7 @@ const UpdateTransactionsView = ({route})=> {
                                 selectedValue={categoryUpdate}
                                 onValueChange={(val) => setCategoryUpdate(val)}
                             >
-                                <Picker.Item label="Select Expense Category" value="category" style={{backgroundColor: Colors.DARK, color: Colors.DARK_GRAY}}/>
+                                <Picker.Item label="Select Expense Category" value="category" />
                                 <Picker.Item label="Bills" value="bills" style={styles.pickerItem} />
                                 <Picker.Item label="Clothing" value="clothing" style={styles.pickerItem}/>
                                 <Picker.Item label="Entertainment" value="entertainment" style={styles.pickerItem}/>

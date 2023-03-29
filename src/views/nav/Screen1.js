@@ -1,23 +1,19 @@
-import React, { useRef,useState, useEffect, useMemo} from 'react'
+import React, {useState, useEffect, useMemo} from 'react'
 import { Text,
     View,
     Image,
     FlatList,
     StyleSheet, 
     TouchableOpacity,
-    Button, StatusBar,
+     StatusBar,
     Alert,} from 'react-native'
-import AnimatedLottieView from 'lottie-react-native';
 import { StackActions, useIsFocused, useNavigation } from '@react-navigation/native';
 import { Card,ProgressBar,Title } from 'react-native-paper';
 import { Entypo } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Avatar,Modal, Portal, Provider } from 'react-native-paper';
+import { Avatar} from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import Parse, {Query} from "parse/react-native.js";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from "axios"
 
     
     const Screen1 =()=>{
@@ -26,7 +22,6 @@ import axios from "axios"
     const focussed =useIsFocused()  
     const [mydata, setMydata]=useState([]);
     const [username, setUsername]=useState('')
-    const [Loading, setLoading]=useState(false);
     const [refresh, setRefresh] = useState(false)
     //const [transactions, setTransactions] = useState([])
     const [balance, setBalance] = useState(0)
@@ -203,35 +198,6 @@ import axios from "axios"
         )
 }
 
-
-
-
-    const doUserLogOut = async () => {
-        setLoading(true)
-        return await Parse.User.logOut()
-        .then(async()=> {
-            const currentUser=await Parse.User.currentAsync();
-            if (currentUser===null){
-                const rm=await AsyncStorage.removeItem("KeepUserLoggedIn")
-                navigation.reset({
-                    index: 0,
-                    routes: [{name: 'AuthNavigator'}]
-                })
-                
-                console.log('removed',rm)
-                Alert.alert('Logout successfully')
-
-                return true
-            }
-
-        })
-        .catch((error)=>{
-            Alert.alert('Error!',error.message)
-            return false;
-        })
-        .finally(() => setLoading(false))
-    }
-
     const EmptyFlatlist =()=>{
         return(
                 <Text style={{marginTop:'30%', fontSize:20, color:'coral', marginLeft:'25%'}}>No Transactions</Text>
@@ -308,20 +274,8 @@ import axios from "axios"
                             <Text style={{marginLeft:40,fontSize:30, fontWeight:'bold', color:'white'}}> {username} </Text>
                         </View>
 
-                        <View style={{flex:0.08,right:'5%',}}>
-                        <TouchableOpacity >
-                            <Ionicons name="notifications" size={28} color="blue" />
-                        </TouchableOpacity>
-                        </View>
                     </View>
 
-                    <View style={{ bottom:'38%', left:'85%', width:'13%',height:'18%'}}>
-                        <TouchableOpacity  onPress={doUserLogOut}>
-                            <AntDesign name="logout" size={24} color="black" />
-                        </TouchableOpacity>
-
-                        <Text>Logout</Text>
-                    </View>
             
                 </View>
             </View>
@@ -508,13 +462,6 @@ const styles=StyleSheet.create({
         top:'20%'
         
     },
-    backimage:{
-        width:'100%',
-        borderWidth:0.5,
-        borderBottomLeftRadius:30,
-        borderBottomRightRadius:30,
-        overflow:'hidden',
-    },
     ListHeadLine:{
         color:'black',
         fontWeight:'500',
@@ -561,10 +508,6 @@ const styles=StyleSheet.create({
         marginLeft:'15%',
         color:'red',
         fontWeight:'bold'
-    },
-    paragraph:{
-        marginTop:200,
-
     },
     fab: {
         alignItems: 'center',

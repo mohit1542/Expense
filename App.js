@@ -7,11 +7,9 @@ import Parse from "parse/react-native.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from "expo-status-bar";
 
-
 Parse.setAsyncStorage(AsyncStorage);
-Parse.initialize('PPeAzbb69YA9r151tP8oEa5308CSn2XNz5eweCXZ','jtO82lSQGgeXVb3jX0gKm7SMHIwY2booxogq7RbT');
+Parse.initialize(Parse.applicationId,Parse.javaScriptKey);
 Parse.serverURL = 'https://parseapi.back4app.com/';
-
 
 export default function App() {
 
